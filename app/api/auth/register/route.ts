@@ -21,10 +21,12 @@ export async function POST(req: NextRequest) {
     const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) throw new AppError("Email already registered", 409, "EMAIL_TAKEN");
 
+    const cleanRef = ref?.trim();
+
     let inviter: { _id: unknown; level?: number } | null = null;
-    if (ref) {
+    if (cleanRef) {
       const refDoc = await ReferralCode.findOne({
-        code: ref.toUpperCase(),
+        code: cleanRef.toUpperCase(),
         active: true,
       }).populate<{ ownerId: { _id: unknown; level?: number } }>("ownerId");
       if (refDoc) inviter = refDoc.ownerId as unknown as { _id: unknown; level?: number };
