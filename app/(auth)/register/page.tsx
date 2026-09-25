@@ -99,6 +99,7 @@ function RegisterForm() {
         value={form.password}
         onChange={(v) => setForm({ ...form, password: v })}
         required
+        minLength={6}
       />
 
       <button
@@ -125,12 +126,14 @@ function Field({
   onChange,
   type = "text",
   required,
+  minLength,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   type?: string;
   required?: boolean;
+  minLength?: number;
 }) {
   return (
     <div>
@@ -138,6 +141,7 @@ function Field({
       <input
         type={type}
         required={required}
+        minLength={minLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
