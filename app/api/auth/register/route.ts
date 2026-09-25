@@ -5,7 +5,7 @@ import { ReferralCode } from "@/lib/db/models/ReferralCode";
 import { registerSchema } from "@/lib/utils/validators";
 import { hashPassword } from "@/lib/auth/hash";
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/auth/session";
-import { createReferralCodeForUser } from "@/lib/referral/generateCode";
+import { generateUniqueCode } from "@/lib/referral/generateCode";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
 export async function POST(req: NextRequest) {
@@ -33,17 +33,22 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await hashPassword(password);
+    const referralCode = await generateUniqueCode();
 
     const user = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashed,
       phone,
+      referralCode,
       referredBy: inviter?._id ?? null,
       level: inviter?.level != null ? inviter.level + 1 : 0,
     });
 
-    await createReferralCodeForUser(user._id);
+    await ReferralCode.create({
+      code: referralCode,
+      ownerId: user._id,
+    });
 
     if (inviter?._id) {
       await ReferralCode.updateOne(
