@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { CommissionLedger } from "@/lib/db/models/CommissionLedger";
+import {
+  CommissionLedger,
+  ICommissionLedger,
+} from "@/lib/db/models/CommissionLedger";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
@@ -12,7 +15,7 @@ export async function GET(
     const session = await requireAuth(req);
     await connectDB();
 
-    const entry = await CommissionLedger.findById(params.id).lean();
+    const entry = await CommissionLedger.findById(params.id).lean<ICommissionLedger | null>();
     if (!entry) throw new AppError("Not found", 404, "NOT_FOUND");
 
     if (

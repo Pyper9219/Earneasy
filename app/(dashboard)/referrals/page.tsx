@@ -2,8 +2,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
 import { Types } from "mongoose";
+
+type ReferralListUser = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt">;
 
 async function getTree(userId: string) {
   await connectDB();
@@ -11,17 +13,17 @@ async function getTree(userId: string) {
 
   const l1 = await User.find({ referredBy: rootId })
     .select("name email referralCode createdAt")
-    .lean();
+    .lean<ReferralListUser[]>();
   const l1Ids = l1.map((u) => u._id);
 
   const l2 = await User.find({ referredBy: { $in: l1Ids } })
     .select("name email referralCode referredBy createdAt")
-    .lean();
+    .lean<ReferralListUser[]>();
   const l2Ids = l2.map((u) => u._id);
 
   const l3 = await User.find({ referredBy: { $in: l2Ids } })
     .select("name email referralCode referredBy createdAt")
-    .lean();
+    .lean<ReferralListUser[]>();
 
   return { l1, l2, l3 };
 }
@@ -54,7 +56,12 @@ function Section({
   users,
 }: {
   title: string;
-  users: Array<{ _id: unknown; name: string; email: string; referralCode: string }>;
+  users: Array<{
+    _id: Types.ObjectId;
+    name: string;
+    email: string;
+    referralCode: string;
+  }>;
 }) {
   return (
     <section className="bg-white rounded-2xl border p-6">

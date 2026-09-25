@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db/connect";
-import { Payout } from "@/lib/db/models/Payout";
+import { Payout, IPayout } from "@/lib/db/models/Payout";
 import { User } from "@/lib/db/models/User";
 import PayoutQueue from "@/components/admin/PayoutQueue";
 
@@ -9,7 +9,7 @@ export default async function AdminPayoutsPage() {
     .sort({ createdAt: -1 })
     .limit(100)
     .populate({ path: "userId", model: User, select: "name email" })
-    .lean();
+    .lean<IPayout[]>();
 
   const serialized = payouts.map((p) => ({
     _id: String(p._id),

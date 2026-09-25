@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     const user = await User.findById(session.userId)
       .select("name email phone role referralCode hasPaid createdAt")
-      .lean();
+      .lean<IUser | null>();
 
     if (!user) throw new AppError("User not found", 404, "NOT_FOUND");
 

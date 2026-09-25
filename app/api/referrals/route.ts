@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 import { Types } from "mongoose";
+
+type ReferralUser = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt" | "referredBy">;
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,17 +15,17 @@ export async function GET(req: NextRequest) {
 
     const l1 = await User.find({ referredBy: rootId })
       .select("name email referralCode createdAt")
-      .lean();
+      .lean<ReferralUser[]>();
     const l2 = await User.find({
       referredBy: { $in: l1.map((u) => u._id) },
     })
       .select("name email referralCode referredBy createdAt")
-      .lean();
+      .lean<ReferralUser[]>();
     const l3 = await User.find({
       referredBy: { $in: l2.map((u) => u._id) },
     })
       .select("name email referralCode referredBy createdAt")
-      .lean();
+      .lean<ReferralUser[]>();
 
     return Response.json({
       direct: l1,

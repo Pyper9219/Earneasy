@@ -4,10 +4,18 @@ import { Types } from "mongoose";
 import ReferralTreeGraph from "@/components/dashboard/ReferralTreeGraph";
 import type { ReferralNode } from "@/types/referral";
 
+interface ReferralTreeUser {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  referralCode: string;
+  createdAt: Date;
+}
+
 async function buildTree(userId: Types.ObjectId): Promise<ReferralNode | null> {
   const root = await User.findById(userId)
     .select("name email referralCode")
-    .lean();
+    .lean<ReferralTreeUser | null>();
   if (!root) return null;
 
   async function fetchLevel(
@@ -17,7 +25,7 @@ async function buildTree(userId: Types.ObjectId): Promise<ReferralNode | null> {
     if (level > 3 || parentIds.length === 0) return [];
     const users = await User.find({ referredBy: { $in: parentIds } })
       .select("name email referralCode createdAt")
-      .lean();
+      .lean<ReferralTreeUser[]>();
     return Promise.all(
       users.map(async (u) => ({
         userId: String(u._id),

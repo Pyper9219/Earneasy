@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { Wallet } from "@/lib/db/models/Wallet";
+import { Wallet, IWallet } from "@/lib/db/models/Wallet";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const session = await requireAuth(req);
     await connectDB();
 
-    let wallet = await Wallet.findOne({ userId: session.userId }).lean();
+    let wallet = await Wallet.findOne({ userId: session.userId }).lean<IWallet | null>();
     if (!wallet) {
       wallet = {
         userId: session.userId,

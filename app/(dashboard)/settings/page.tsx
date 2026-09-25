@@ -2,7 +2,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
+
+type SettingsUser = Pick<
+  IUser,
+  "_id" | "name" | "email" | "phone" | "referralCode" | "hasPaid" | "createdAt"
+>;
 
 export default async function SettingsPage() {
   const token = cookies().get(SESSION_COOKIE)?.value;
@@ -12,7 +17,7 @@ export default async function SettingsPage() {
   await connectDB();
   const user = await User.findById(session.userId)
     .select("name email phone referralCode hasPaid createdAt")
-    .lean();
+    .lean<SettingsUser | null>();
 
   return (
     <div className="max-w-2xl space-y-6">

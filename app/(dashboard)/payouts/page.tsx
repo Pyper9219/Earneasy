@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
-import { Wallet } from "@/lib/db/models/Wallet";
-import { Payout } from "@/lib/db/models/Payout";
+import { Wallet, IWallet } from "@/lib/db/models/Wallet";
+import { Payout, IPayout } from "@/lib/db/models/Payout";
 import PayoutForm from "@/components/dashboard/PayoutForm";
 
 export default async function PayoutsPage() {
@@ -13,8 +13,11 @@ export default async function PayoutsPage() {
 
   await connectDB();
   const [wallet, payouts] = await Promise.all([
-    Wallet.findOne({ userId: session.userId }).lean(),
-    Payout.find({ userId: session.userId }).sort({ createdAt: -1 }).limit(20).lean(),
+    Wallet.findOne({ userId: session.userId }).lean<IWallet | null>(),
+    Payout.find({ userId: session.userId })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean<IPayout[]>(),
   ]);
 
   return (

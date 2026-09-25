@@ -1,12 +1,14 @@
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
+
+type ReferralRoot = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt">;
 
 export default async function AdminReferralTreePage() {
   await connectDB();
   const roots = await User.find({ referredBy: null })
     .select("name email referralCode createdAt")
     .limit(50)
-    .lean();
+    .lean<ReferralRoot[]>();
 
   return (
     <div className="space-y-6">

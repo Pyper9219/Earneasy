@@ -2,15 +2,19 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
-import { Wallet } from "@/lib/db/models/Wallet";
-import { User } from "@/lib/db/models/User";
+import { Wallet, IWallet } from "@/lib/db/models/Wallet";
+import { User, IUser } from "@/lib/db/models/User";
 import { CommissionLedger } from "@/lib/db/models/CommissionLedger";
+
+interface DashboardUser extends Pick<IUser, "_id" | "name" | "email" | "referralCode" | "hasPaid"> {}
 
 async function getDashboardData(userId: string) {
   await connectDB();
   const [wallet, user, referrals] = await Promise.all([
-    Wallet.findOne({ userId }).lean(),
-    User.findById(userId).select("name email referralCode hasPaid").lean(),
+    Wallet.findOne({ userId }).lean<IWallet | null>(),
+    User.findById(userId)
+      .select("name email referralCode hasPaid")
+      .lean<DashboardUser | null>(),
     CommissionLedger.aggregate([
       { $match: { userId: { $toObjectId: userId } } },
       { $group: { _id: "$level", total: { $sum: "$amount" }, count: { $sum: 1 } } },

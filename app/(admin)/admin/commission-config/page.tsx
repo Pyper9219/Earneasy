@@ -1,10 +1,15 @@
 import { connectDB } from "@/lib/db/connect";
-import { CommissionConfig } from "@/lib/db/models/CommissionConfig";
+import {
+  CommissionConfig,
+  ICommissionConfig,
+} from "@/lib/db/models/CommissionConfig";
 import CommissionConfigForm from "@/components/admin/CommissionConfigForm";
 
 export default async function CommissionConfigPage() {
   await connectDB();
-  const config = await CommissionConfig.findOne({ key: "default" }).lean();
+  const config = await CommissionConfig.findOne({ key: "default" }).lean<
+    ICommissionConfig | null
+  >();
 
   return (
     <div className="max-w-2xl space-y-6">
