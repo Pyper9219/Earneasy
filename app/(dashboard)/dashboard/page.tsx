@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Types } from "mongoose";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
 import { Wallet, IWallet } from "@/lib/db/models/Wallet";
@@ -10,13 +11,15 @@ interface DashboardUser extends Pick<IUser, "_id" | "name" | "email" | "referral
 
 async function getDashboardData(userId: string) {
   await connectDB();
+  const userObjectId = new Types.ObjectId(userId);
+
   const [wallet, user, referrals] = await Promise.all([
     Wallet.findOne({ userId }).lean<IWallet | null>(),
     User.findById(userId)
       .select("name email referralCode hasPaid")
       .lean<DashboardUser | null>(),
     CommissionLedger.aggregate([
-      { $match: { userId: { $toObjectId: userId } } },
+      { $match: { userId: userObjectId } },
       { $group: { _id: "$level", total: { $sum: "$amount" }, count: { $sum: 1 } } },
     ]),
   ]);
