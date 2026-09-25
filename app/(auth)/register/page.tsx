@@ -101,6 +101,12 @@ function RegisterForm() {
         required
         minLength={6}
       />
+      <Field
+        label="Referral code (optional)"
+        value={form.ref}
+        onChange={(v) => setForm({ ...form, ref: v })}
+        placeholder="Leave blank if you don't have one"
+      />
 
       <button
         type="submit"
@@ -127,6 +133,7 @@ function Field({
   type = "text",
   required,
   minLength,
+  placeholder,
 }: {
   label: string;
   value: string;
@@ -134,6 +141,7 @@ function Field({
   type?: string;
   required?: boolean;
   minLength?: number;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -142,6 +150,7 @@ function Field({
         type={type}
         required={required}
         minLength={minLength}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"

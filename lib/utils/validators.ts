@@ -6,11 +6,14 @@ export const registerSchema = z.object({
   password: z.string().min(6).max(128),
   phone: z.string().min(7).max(20).optional(),
   ref: z
-    .string()
-    .trim()
-    .max(32)
+    .union([z.string(), z.null()])
     .optional()
-    .transform((value) => (value && value.length > 0 ? value : undefined)),
+    .transform((value) => {
+      if (value == null) return undefined;
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : undefined;
+    })
+    .pipe(z.string().max(32).optional()),
 });
 
 export const loginSchema = z.object({
