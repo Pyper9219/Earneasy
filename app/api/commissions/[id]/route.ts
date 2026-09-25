@@ -7,6 +7,8 @@ import {
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }

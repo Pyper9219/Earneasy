@@ -7,6 +7,8 @@ import { Payout } from "@/lib/db/models/Payout";
 import { requireAdmin } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     await requireAdmin(req);

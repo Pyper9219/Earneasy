@@ -1,7 +1,10 @@
 import { connectDB } from "@/lib/db/connect";
 import { Payment } from "@/lib/db/models/Payment";
 import { CommissionLedger } from "@/lib/db/models/CommissionLedger";
-import { CommissionConfig } from "@/lib/db/models/CommissionConfig";
+import {
+  CommissionConfig,
+  ICommissionConfig,
+} from "@/lib/db/models/CommissionConfig";
 import { resolveUpline } from "@/lib/referral/resolveUpline";
 import { creditWallet } from "./creditWallet";
 import { User } from "@/lib/db/models/User";
@@ -50,8 +53,8 @@ export async function distributeCommission(
     };
   }
 
-  const config =
-    (await CommissionConfig.findOne({ key: "default" }).lean()) ??
+  const config: ICommissionConfig | { level1: number; level2: number; level3: number; totalPrice: number } =
+    (await CommissionConfig.findOne({ key: "default" }).lean<ICommissionConfig | null>()) ??
     ({ level1: 250, level2: 100, level3: 50, totalPrice: 450 } as const);
 
   const uplines = await resolveUpline(payment.userId);

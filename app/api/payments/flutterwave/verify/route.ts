@@ -7,6 +7,8 @@ import { verifyPayment } from "@/lib/flutterwave/verifyPayment";
 import { distributeCommission } from "@/lib/commission/distributeCommission";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await requireAuth(req);

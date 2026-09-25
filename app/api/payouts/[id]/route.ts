@@ -7,6 +7,8 @@ import { initiateTransfer } from "@/lib/flutterwave/initiateTransfer";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const actionSchema = z.object({
   action: z.enum(["approve", "reject"]),
   reason: z.string().optional(),

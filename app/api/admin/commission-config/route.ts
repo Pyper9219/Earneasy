@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/auth/middleware";
 import { commissionConfigSchema } from "@/lib/utils/validators";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     await requireAdmin(req);

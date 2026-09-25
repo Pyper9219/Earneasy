@@ -4,6 +4,8 @@ import { Wallet, IWallet } from "@/lib/db/models/Wallet";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await requireAuth(req);

@@ -1,9 +1,11 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db/connect";
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 import { Types } from "mongoose";
+
+export const dynamic = "force-dynamic";
 
 interface TreeNode {
   userId: string;
@@ -14,6 +16,8 @@ interface TreeNode {
   joinedAt: string;
   children: TreeNode[];
 }
+
+type TreeUser = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt">;
 
 export async function GET(
   req: NextRequest,
@@ -31,7 +35,7 @@ export async function GET(
     const rootId = new Types.ObjectId(params.userId);
     const root = await User.findById(rootId)
       .select("name email referralCode")
-      .lean();
+      .lean<TreeUser | null>();
     if (!root) throw new AppError("User not found", 404, "NOT_FOUND");
 
     async function fetchLevel(
@@ -41,7 +45,7 @@ export async function GET(
       if (level > 3 || parentIds.length === 0) return [];
       const users = await User.find({ referredBy: { $in: parentIds } })
         .select("name email referralCode createdAt")
-        .lean();
+        .lean<TreeUser[]>();
       return Promise.all(
         users.map(async (u) => ({
           userId: String(u._id),

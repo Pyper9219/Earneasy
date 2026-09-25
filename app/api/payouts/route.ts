@@ -10,6 +10,8 @@ import { customAlphabet } from "nanoid";
 
 const ref = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ0123456789", 12);
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await requireAuth(req);

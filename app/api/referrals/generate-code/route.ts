@@ -5,6 +5,8 @@ import { requireAuth } from "@/lib/auth/middleware";
 import { createReferralCodeForUser } from "@/lib/referral/generateCode";
 import { toErrorResponse } from "@/lib/utils/errors";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth(req);

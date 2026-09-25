@@ -8,6 +8,8 @@ import { toErrorResponse, AppError } from "@/lib/utils/errors";
 import { CLIENT_PRICE_KES, CURRENCY } from "@/lib/utils/constants";
 import { randomBytes } from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth(req);

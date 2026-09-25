@@ -5,6 +5,8 @@ import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 import { Types } from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const session = await requireAuth(req);

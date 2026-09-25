@@ -1,10 +1,12 @@
-import { User } from "@/lib/db/models/User";
+import { User, IUser } from "@/lib/db/models/User";
 import { Types } from "mongoose";
 
 export interface UplineEntry {
   userId: Types.ObjectId;
   level: 1 | 2 | 3;
 }
+
+type ReferralParent = Pick<IUser, "_id" | "referredBy">;
 
 /**
  * Walk up the referredBy chain from the buyer to find up to 3 upline users.
@@ -14,7 +16,9 @@ export async function resolveUpline(
   buyerId: Types.ObjectId | string
 ): Promise<UplineEntry[]> {
   const uplines: UplineEntry[] = [];
-  let current = await User.findById(buyerId).select("referredBy").lean();
+  let current = await User.findById(buyerId)
+    .select("referredBy")
+    .lean<ReferralParent | null>();
   let level = 1;
 
   while (current?.referredBy && level <= 3) {
@@ -24,7 +28,7 @@ export async function resolveUpline(
     });
     current = await User.findById(current.referredBy)
       .select("referredBy")
-      .lean();
+      .lean<ReferralParent | null>();
     level++;
   }
 

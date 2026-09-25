@@ -5,6 +5,8 @@ import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse } from "@/lib/utils/errors";
 import { Types } from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 type ReferralUser = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt" | "referredBy">;
 
 export async function GET(req: NextRequest) {
