@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import type { ReactNode } from "react";
+import MobileNavButton from "@/components/dashboard/MobileNavButton";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard" },
@@ -58,6 +59,7 @@ export default async function DashboardLayout({
           </button>
         </form>
       </aside>
+      <MobileNavButton items={NAV} role={session.role} />
       <main className="flex-1 p-6 md:p-10">{children}</main>
     </div>
   );
