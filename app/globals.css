@@ -26,6 +26,21 @@ body {
     sans-serif;
 }
 
+/* Responsive defaults */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+img, picture, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve tap targets and spacing on small screens */
+button, a, input, label {
+  -webkit-tap-highlight-color: transparent;
+}
+
 a {
   color: inherit;
   text-decoration: none;
