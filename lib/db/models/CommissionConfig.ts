@@ -1,8 +1,8 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 export interface ICommissionConfig { level1: number; level2: number; level3: number; surveyRewardMin: number; surveyRewardMax: number; activationFee: number;
-  _id?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 const CommissionConfigSchema = new Schema<ICommissionConfig>({
   level1: { type: Number, default: 250 }, level2: { type: Number, default: 100 }, level3: { type: Number, default: 50 },

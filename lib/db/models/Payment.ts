@@ -8,8 +8,8 @@ export interface IPayment {
   paymentMethod: string;
   transactionId?: string;
   createdAt: Date;
-  _id?: string;
-  updatedAt?: Date;
+  _id: string;
+  updatedAt: Date;
 }
 
 const PaymentSchema = new Schema<IPayment>({

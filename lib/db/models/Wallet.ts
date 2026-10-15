@@ -2,9 +2,9 @@ import mongoose, { Schema, model, models } from 'mongoose';
 export interface IWallet { userId: string; balance: number; totalDeposits: number; totalWithdrawals: number;
   totalEarned: number;
   totalWithdrawn: number;
-  _id?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  _id: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 const WalletSchema = new Schema<IWallet>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },

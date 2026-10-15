@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, models } from 'mongoose';
 export interface IUser {
-  _id?: string;
+  _id: string;
   name: string;
   email: string;
   password: string;
@@ -9,9 +9,9 @@ export interface IUser {
   totalSurveyEarnings: number;
   referralCode?: string;
   referredBy?: string;
-  createdAt?: Date;
+  createdAt: Date;
   hasPaid: boolean;
-  updatedAt?: Date;
+  updatedAt: Date;
 }
 const UserSchema = new Schema<IUser>({
   name: { type: String, required: true },
