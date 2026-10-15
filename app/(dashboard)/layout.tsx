@@ -7,6 +7,7 @@ import MobileNavButton from "@/components/dashboard/MobileNavButton";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/surveys", label: "Surveys" },
   { href: "/referrals", label: "Referrals" },
   { href: "/referrals/invite", label: "Invite" },
   { href: "/earnings", label: "Earnings" },
