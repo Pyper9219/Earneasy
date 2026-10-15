@@ -1,9 +1,11 @@
-﻿import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 export const SESSION_COOKIE = 'auth_token';
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
-export interface SessionUser { id: string; email: string; role: 'user' | 'admin'; }
+export interface SessionUser { id: string; email: string; role: 'user' | 'admin';
+  userId: string;
+}
 export async function getSession(): Promise<SessionUser | null> {
   const cookieStore = cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;

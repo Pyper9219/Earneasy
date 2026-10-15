@@ -1,4 +1,4 @@
-﻿import mongoose, { Schema, model, models } from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 export interface IUser {
   _id?: string;
   name: string;
@@ -10,6 +10,7 @@ export interface IUser {
   referralCode?: string;
   referredBy?: string;
   createdAt?: Date;
+  hasPaid: boolean;
 }
 const UserSchema = new Schema<IUser>({
   name: { type: String, required: true },
