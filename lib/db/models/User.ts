@@ -11,6 +11,7 @@ export interface IUser {
   referredBy?: string;
   createdAt?: Date;
   hasPaid: boolean;
+  updatedAt?: Date;
 }
 const UserSchema = new Schema<IUser>({
   name: { type: String, required: true },
