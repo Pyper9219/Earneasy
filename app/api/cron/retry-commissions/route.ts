@@ -21,7 +21,11 @@ export async function GET(req: NextRequest) {
 
   for (const payment of stuck) {
     try {
-      const result = await distributeCommission(payment._id);
+      const result = await distributeCommission(
+        String(payment.userId),
+        payment.amount,
+        "activation"
+      );
       results.push({
         paymentId: String(payment._id),
         distributed: result.distributed.length,

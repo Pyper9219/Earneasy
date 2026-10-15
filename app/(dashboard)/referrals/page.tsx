@@ -56,12 +56,7 @@ function Section({
   users,
 }: {
   title: string;
-  users: Array<{
-    _id: Types.ObjectId;
-    name: string;
-    email: string;
-    referralCode: string;
-  }>;
+  users: ReferralListUser[];
 }) {
   return (
     <section className="bg-white rounded-2xl border p-6">

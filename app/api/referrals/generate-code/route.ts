@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ code: user.referralCode });
     }
 
-    const doc = await createReferralCodeForUser(user._id);
+    const doc = await createReferralCodeForUser(String(user._id), user.name);
     return NextResponse.json({ code: doc.code });
   } catch (err) {
     return toErrorResponse(err);

@@ -53,7 +53,11 @@ export async function GET(req: NextRequest) {
 
     await User.findByIdAndUpdate(payment.userId, { hasPaid: true });
 
-    const result = await distributeCommission(payment._id);
+    const result = await distributeCommission(
+      String(payment.userId),
+      payment.amount,
+      "activation"
+    );
 
     return NextResponse.json({ status: "successful", distribution: result });
   } catch (err) {

@@ -51,10 +51,13 @@ export async function GET(
           userId: String(u._id),
           name: u.name,
           email: u.email,
-          code: u.referralCode,
+          code: u.referralCode ?? "",
           level,
           joinedAt: u.createdAt.toISOString(),
-          children: await fetchLevel([u._id], (level + 1) as 1 | 2 | 3),
+          children: await fetchLevel(
+            [new Types.ObjectId(u._id)],
+            (level + 1) as 1 | 2 | 3
+          ),
         }))
       );
     }
@@ -66,7 +69,7 @@ export async function GET(
         userId: String(root._id),
         name: root.name,
         email: root.email,
-        code: root.referralCode,
+        code: root.referralCode ?? "",
         level: 0,
         joinedAt: "",
         children,

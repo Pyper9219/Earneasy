@@ -4,6 +4,8 @@ import { Payment } from "@/lib/db/models/Payment";
 import { CommissionLedger } from "@/lib/db/models/CommissionLedger";
 import { Payout } from "@/lib/db/models/Payout";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOverviewPage() {
   await connectDB();
   const [users, paidUsers, payments, commissions, pendingPayouts] =

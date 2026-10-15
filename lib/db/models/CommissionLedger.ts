@@ -1,5 +1,5 @@
-import mongoose, { Schema, model, models } from 'mongoose';
-export interface ICommissionLedger { userId: string; referredUserId: string; amount: number; level: number; type: string; status: string;
+import mongoose, { Schema, model, models, Types } from 'mongoose';
+export interface ICommissionLedger { userId: Types.ObjectId; referredUserId: Types.ObjectId; amount: number; level: number; type: string; status: string;
   _id: string;
   createdAt: Date;
   updatedAt: Date;

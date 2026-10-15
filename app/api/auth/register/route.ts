@@ -27,13 +27,15 @@ export async function POST(req: NextRequest) {
     if (cleanRef) {
       const refDoc = await ReferralCode.findOne({
         code: cleanRef.toUpperCase(),
-        active: true,
-      }).populate<{ ownerId: { _id: unknown; level?: number } }>("ownerId");
-      if (refDoc) inviter = refDoc.ownerId as unknown as { _id: unknown; level?: number };
+        isActive: true,
+      }).populate<{ userId: { _id: unknown; level?: number } }>("userId");
+      if (refDoc) {
+        inviter = refDoc.userId as unknown as { _id: unknown; level?: number };
+      }
     }
 
     const hashed = await hashPassword(password);
-    const referralCode = await generateUniqueCode();
+    const referralCode = await generateUniqueCode(name);
 
     const user = await User.create({
       name,
@@ -47,12 +49,12 @@ export async function POST(req: NextRequest) {
 
     await ReferralCode.create({
       code: referralCode,
-      ownerId: user._id,
+      userId: user._id,
     });
 
     if (inviter?._id) {
       await ReferralCode.updateOne(
-        { ownerId: inviter._id },
+        { userId: inviter._id },
         { $inc: { signups: 1 } }
       );
     }

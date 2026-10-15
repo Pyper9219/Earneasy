@@ -1,6 +1,8 @@
 ﻿import { connectDB } from "@/lib/db/connect";
 import { User, IUser } from "@/lib/db/models/User";
 
+export const dynamic = "force-dynamic";
+
 type ReferralRoot = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt">;
 
 export default async function AdminReferralTreePage() {

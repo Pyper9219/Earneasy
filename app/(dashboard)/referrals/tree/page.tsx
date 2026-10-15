@@ -20,7 +20,7 @@ export default async function ReferralTreePage() {
   const session = token ? await verifySessionToken(token) : null;
   if (!session) redirect("/login");
 
-  const cookieHeader = `session=${token}`;
+  const cookieHeader = `${SESSION_COOKIE}=${token}`;
   const data = await fetchTree(session.userId, cookieHeader);
 
   if (!data) {

@@ -8,14 +8,15 @@ import type { FlutterwaveWebhookPayload } from "@/types/flutterwave";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("verif-hash");
+  const rawPayload = await req.text();
 
-  if (!verifyWebhookSignature(signature)) {
+  if (!verifyWebhookSignature(rawPayload, signature ?? "")) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
   let payload: FlutterwaveWebhookPayload;
   try {
-    payload = (await req.json()) as FlutterwaveWebhookPayload;
+    payload = JSON.parse(rawPayload) as FlutterwaveWebhookPayload;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
@@ -43,7 +44,11 @@ export async function POST(req: NextRequest) {
 
       await User.findByIdAndUpdate(payment.userId, { hasPaid: true });
 
-      await distributeCommission(payment._id);
+      await distributeCommission(
+        String(payment.userId),
+        payment.amount,
+        "activation"
+      );
     } else {
       payment.status = "failed";
       await payment.save();

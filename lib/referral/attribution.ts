@@ -2,7 +2,7 @@
 import { connectDB } from '@/lib/db/connect';
 import { User } from '@/lib/db/models/User';
 import { ReferralCode } from '@/lib/db/models/ReferralCode';
-export const REFERRAL_COOKIE = 'referral_code';
+export const REFERRAL_COOKIE = 'earneasy_ref';
 export function setReferralCookie(code: string) {
   const cookieStore = cookies();
   cookieStore.set(REFERRAL_COOKIE, code, { maxAge: 60 * 60 * 24 * 30, path: '/' });

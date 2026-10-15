@@ -6,13 +6,14 @@ import { verifyWebhookSignature } from "@/lib/flutterwave/verifyWebhookSignature
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("verif-hash");
-  if (!verifyWebhookSignature(signature)) {
+  const rawPayload = await req.text();
+  if (!verifyWebhookSignature(rawPayload, signature ?? "")) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
   try {
     await connectDB();
-    const payload = (await req.json()) as {
+    const payload = JSON.parse(rawPayload) as {
       event?: string;
       data?: { reference?: string; status?: string };
     };

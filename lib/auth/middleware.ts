@@ -1,12 +1,17 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getSession } from './session';
-export async function requireAuth(req: NextRequest) {
+import { AppError } from '@/lib/utils/errors';
+
+export async function requireAuth(_req: NextRequest) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!session) throw new AppError('Unauthorized', 401, 'UNAUTHORIZED');
   return session;
 }
-export async function requireAdmin(req: NextRequest) {
+
+export async function requireAdmin(_req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!session || session.role !== 'admin') {
+    throw new AppError('Forbidden', 403, 'FORBIDDEN');
+  }
   return session;
 }

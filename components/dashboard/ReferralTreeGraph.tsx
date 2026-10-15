@@ -26,7 +26,7 @@ function Node({ node, depth }: { node: ReferralNode; depth: number }) {
         </div>
       </div>
       {node.children?.map((child) => (
-        <Node key={child.userId} node={child} depth={depth + 1} />
+        <Node key={child.userId ?? child._id} node={child} depth={depth + 1} />
       ))}
     </div>
   );

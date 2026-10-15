@@ -6,8 +6,8 @@ import { User, IUser } from "@/lib/db/models/User";
 
 type SettingsUser = Pick<
   IUser,
-  "_id" | "name" | "email" | "phone" | "referralCode" | "hasPaid" | "createdAt"
->;
+  "_id" | "name" | "email" | "referralCode" | "hasPaid" | "createdAt"
+> & { phone?: string };
 
 export default async function SettingsPage() {
   const token = cookies().get(SESSION_COOKIE)?.value;

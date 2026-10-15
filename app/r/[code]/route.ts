@@ -10,7 +10,7 @@ export async function GET(
   const code = params.code?.toUpperCase();
 
   await connectDB();
-  const ref = await ReferralCode.findOne({ code, active: true });
+  const ref = await ReferralCode.findOne({ code, isActive: true });
 
   const redirectUrl = new URL(`/register?ref=${code}`, req.url);
 
@@ -21,6 +21,6 @@ export async function GET(
   await ReferralCode.updateOne({ _id: ref._id }, { $inc: { clicks: 1 } });
 
   const res = NextResponse.redirect(redirectUrl);
-  setReferralCookie(res, code);
+  setReferralCookie(code);
   return res;
 }

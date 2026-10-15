@@ -5,6 +5,8 @@ import {
 } from "@/lib/db/models/CommissionConfig";
 import CommissionConfigForm from "@/components/admin/CommissionConfigForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function CommissionConfigPage() {
   await connectDB();
   const config = await CommissionConfig.findOne({ key: "default" }).lean<

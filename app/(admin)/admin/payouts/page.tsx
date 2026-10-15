@@ -4,6 +4,8 @@ import { User } from "@/lib/db/models/User";
 import PayoutQueue from "@/components/admin/PayoutQueue";
 import { Types } from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 type AdminPayout = IPayout & {
   _id: Types.ObjectId;
   createdAt: Date;
