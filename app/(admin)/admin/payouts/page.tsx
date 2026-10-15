@@ -2,6 +2,18 @@ import { connectDB } from "@/lib/db/connect";
 import { Payout, IPayout } from "@/lib/db/models/Payout";
 import { User } from "@/lib/db/models/User";
 import PayoutQueue from "@/components/admin/PayoutQueue";
+import { Types } from "mongoose";
+
+type AdminPayout = IPayout & {
+  _id: Types.ObjectId;
+  createdAt: Date;
+  destination: {
+    type: string;
+    accountNumber: string;
+    bankCode?: string;
+    network?: string;
+  };
+};
 
 export default async function AdminPayoutsPage() {
   await connectDB();
@@ -9,7 +21,7 @@ export default async function AdminPayoutsPage() {
     .sort({ createdAt: -1 })
     .limit(100)
     .populate({ path: "userId", model: User, select: "name email" })
-    .lean<IPayout[]>();
+    .lean<AdminPayout[]>();
 
   const serialized = payouts.map((p) => ({
     _id: String(p._id),
