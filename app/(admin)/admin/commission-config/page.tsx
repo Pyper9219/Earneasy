@@ -24,7 +24,7 @@ export default async function CommissionConfigPage() {
           level1: config?.level1 ?? 250,
           level2: config?.level2 ?? 100,
           level3: config?.level3 ?? 50,
-          totalPrice: config?.totalPrice ?? 450,
+          totalPrice: config?.activationFee ?? 450,
         }}
       />
     </div>
