@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/db/connect";
+﻿import { connectDB } from "@/lib/db/connect";
 import { User, IUser } from "@/lib/db/models/User";
 
 type ReferralRoot = Pick<IUser, "_id" | "name" | "email" | "referralCode" | "createdAt">;
@@ -34,9 +34,9 @@ export default async function AdminReferralTreePage() {
               <tr key={String(u._id)}>
                 <td className="px-4 py-3 font-medium">{u.name}</td>
                 <td className="px-4 py-3 text-slate-500">{u.email}</td>
-                <td className="px-4 py-3 font-mono text-xs">{u.referralCode}</td>
+                <td className="px-4 py-3 font-mono text-xs">{u.referralCode || 'N/A'}</td>
                 <td className="px-4 py-3">
-                  {new Date(u.createdAt).toLocaleDateString()}
+                  {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
                 </td>
               </tr>
             ))}
