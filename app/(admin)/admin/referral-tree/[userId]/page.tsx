@@ -1,4 +1,4 @@
-import { connectDB } from "@/lib/db/connect";
+﻿import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import { Types } from "mongoose";
 import ReferralTreeGraph from "@/components/dashboard/ReferralTreeGraph";
@@ -28,24 +28,22 @@ async function buildTree(userId: Types.ObjectId): Promise<ReferralNode | null> {
       .lean<ReferralTreeUser[]>();
     return Promise.all(
       users.map(async (u) => ({
-        userId: String(u._id),
+        _id: String(u._id),
         name: u.name,
         email: u.email,
-        code: u.referralCode,
+        referralCode: u.referralCode,
         level,
-        joinedAt: u.createdAt.toISOString(),
         children: await fetchLevel([u._id], (level + 1) as 1 | 2 | 3),
       }))
     );
   }
 
   return {
-    userId: String(root._id),
+    _id: String(root._id),
     name: root.name,
     email: root.email,
-    code: root.referralCode,
-    level: 0 as unknown as 1,
-    joinedAt: "",
+    referralCode: root.referralCode,
+    level: 0,
     children: await fetchLevel([root._id], 1),
   };
 }
