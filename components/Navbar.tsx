@@ -37,11 +37,17 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={\	ext-sm font-medium transition-colors flex items-center gap-1.5 \\}
+                  className={`text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    active ? 'text-emerald-400' : 'text-slate-300 hover:text-white'
+                  }`}
                 >
                   {link.name}
                   {link.badge && (
-                    <span className={\	ext-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full \ animate-pulse\}>
+                    <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full animate-pulse ${
+                      link.badge === 'HOT'
+                        ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    }`}>
                       {link.badge}
                     </span>
                   )}
@@ -78,7 +84,11 @@ export default function Navbar() {
             >
               <span>{link.name}</span>
               {link.badge && (
-                <span className={\	ext-[10px] font-bold px-2 py-0.5 rounded-full \\}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  link.badge === 'HOT'
+                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                }`}>
                   {link.badge}
                 </span>
               )}

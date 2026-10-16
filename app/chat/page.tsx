@@ -32,7 +32,7 @@ export default function ChatPage() {
 
   const handleStartChat = (profile: Profile) => {
     if (isPaid) {
-      alert(\Starting chat with \...\);
+      alert(`Starting chat with ${profile.name}...`);
     } else {
       setSelectedProfile(profile);
       setShowPaymentModal(true);
@@ -55,7 +55,7 @@ export default function ChatPage() {
           Chat with People Worldwide & <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-pink-400">Earn Dollars</span>
         </h1>
         <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
-          Connect with international clients who are willing to pay <span className="text-white font-bold">\-\ per hour</span> for meaningful conversations and cultural exchange.
+          Connect with international clients who are willing to pay <span className="text-white font-bold">$9–$15 per hour</span> for meaningful conversations and cultural exchange.
         </p>
         <div className="flex items-center justify-center gap-6 text-sm">
           <div className="flex items-center gap-2"><CheckCircle className="w-5 h-5 text-emerald-400" /><span className="text-slate-300">Verified Profiles</span></div>
@@ -80,7 +80,7 @@ export default function ChatPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-emerald-400" />
-                  <span className="text-2xl font-extrabold text-emerald-400">\</span>
+                  <span className="text-2xl font-extrabold text-emerald-400">${profile.ratePerHour}</span>
                   <span className="text-sm text-slate-400">/hour</span>
                 </div>
                 <span className="px-3 py-1 rounded-full bg-rose-500/10 text-rose-400 text-xs font-bold uppercase">
@@ -119,7 +119,7 @@ export default function ChatPage() {
               </div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-slate-400">Their rate:</span>
-                <span className="font-bold text-emerald-400">\/hour</span>
+                <span className="font-bold text-emerald-400">${selectedProfile.ratePerHour}/hour</span>
               </div>
               <div className="border-t border-white/10 pt-2 mt-2">
                 <div className="flex items-center justify-between">
