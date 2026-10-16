@@ -110,7 +110,9 @@ export default function DashboardLayout({
         </div>
       </aside>
 
-      <MobileNavButton items={NAV} role={session.role} />
+      <MobileNavButton
+        items={NAV.map(({ href, label }) => ({ href, label }))}
+      />
 
       <main className="flex-1 md:ml-72 min-h-screen">
         <div className="max-w-7xl mx-auto p-6 md:p-10">

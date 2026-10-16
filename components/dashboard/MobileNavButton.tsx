@@ -13,10 +13,8 @@ interface NavItem {
 
 export default function MobileNavButton({
   items,
-  role,
 }: {
   items: NavItem[];
-  role: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();

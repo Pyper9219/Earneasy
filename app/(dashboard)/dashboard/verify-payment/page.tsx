@@ -1,12 +1,25 @@
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VerifyPaymentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="animate-pulse text-slate-500 text-sm">
+            Confirming your payment...
+          </div>
+        </div>
+      }
+    >
+      <VerifyPaymentStatus />
+    </Suspense>
+  );
+}
+
+function VerifyPaymentStatus() {
   const router = useRouter();
   const params = useSearchParams();
   const txRef = params.get("tx_ref");
