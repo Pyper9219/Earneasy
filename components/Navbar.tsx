@@ -1,7 +1,7 @@
 ﻿'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Menu, X, Zap } from 'lucide-react';
+import { Menu, X, Zap, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Navbar() {
@@ -57,14 +57,12 @@ export default function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Link href="/login" className="text-sm font-medium text-slate-300 hover:text-white px-4 py-2 rounded-lg transition-colors">
-              Login
-            </Link>
             <Link
-              href="/register"
-              className="btn-shine text-sm font-semibold px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+              href="/dashboard"
+              className="btn-shine text-sm font-semibold px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center gap-2"
             >
-              Get Started
+              <LayoutDashboard className="w-4 h-4" />
+              Open Dashboard
             </Link>
           </div>
 
@@ -97,11 +95,9 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="pt-4 mt-4 border-t border-white/10 flex flex-col gap-2">
-              <Link href="/login" className="w-full text-center py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors">
-                Login
-              </Link>
-              <Link href="/register" className="w-full text-center py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg shadow-emerald-500/20">
-                Get Started
+              <Link href="/dashboard" onClick={() => setIsOpen(false)} className="w-full text-center py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                <LayoutDashboard className="w-4 h-4" />
+                Open Dashboard
               </Link>
             </div>
           </div>

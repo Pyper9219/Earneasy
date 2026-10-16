@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Video, Youtube, Music, Wallet, TrendingUp, Clock } from "lucide-react";
+import { ArrowLeft, Video, Wallet, TrendingUp } from "lucide-react";
+import { YoutubeIcon, MusicNoteIcon } from "@/components/ui/icons";
 
 export default function VideoEarningsPage() {
   const [videoBalance, setVideoBalance] = useState(0);
@@ -25,8 +26,8 @@ export default function VideoEarningsPage() {
 
   const stats = [
     { label: "Total Video Balance", value: `KES ${videoBalance.toLocaleString()}`, icon: Wallet, gradient: "from-emerald-500 to-teal-600" },
-    { label: "YouTube Earnings", value: `KES ${youtubeEarnings.toLocaleString()}`, icon: Youtube, gradient: "from-red-500 to-red-600", sub: `${watchedYoutube.length} videos` },
-    { label: "TikTok Earnings", value: `KES ${tiktokEarnings.toLocaleString()}`, icon: Music, gradient: "from-pink-500 to-purple-600", sub: `${watchedTiktok.length} videos` },
+    { label: "YouTube Earnings", value: `KES ${youtubeEarnings.toLocaleString()}`, icon: YoutubeIcon, gradient: "from-red-500 to-red-600", sub: `${watchedYoutube.length} videos` },
+    { label: "TikTok Earnings", value: `KES ${tiktokEarnings.toLocaleString()}`, icon: MusicNoteIcon, gradient: "from-pink-500 to-purple-600", sub: `${watchedTiktok.length} videos` },
     { label: "Total Watched", value: `${totalWatched}`, icon: Video, gradient: "from-cyan-500 to-blue-600", sub: "videos completed" },
   ];
 

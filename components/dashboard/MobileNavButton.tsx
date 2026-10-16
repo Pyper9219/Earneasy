@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Zap, LogOut, Video, Youtube, Music } from "lucide-react";
+import { Menu, X, Home } from "lucide-react";
+import { YoutubeIcon, MusicNoteIcon } from "@/components/ui/icons";
 
 interface NavItem {
   href: string;
@@ -22,7 +23,6 @@ export default function MobileNavButton({
 
   return (
     <>
-      {/* Floating button - mobile only */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-2xl shadow-emerald-500/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
@@ -31,7 +31,6 @@ export default function MobileNavButton({
         {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
-      {/* Overlay menu */}
       {isOpen && (
         <div className="md:hidden fixed inset-0 z-40 bg-[#050b1a]/95 backdrop-blur-xl pt-20 pb-24 overflow-y-auto">
           <div className="px-6 space-y-1">
@@ -61,7 +60,7 @@ export default function MobileNavButton({
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5"
             >
-              <Youtube className="w-5 h-5 text-red-400" />
+              <YoutubeIcon className="w-5 h-5 text-red-400" />
               YouTube Videos
             </Link>
             <Link
@@ -69,29 +68,20 @@ export default function MobileNavButton({
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:bg-white/5"
             >
-              <Music className="w-5 h-5 text-pink-400" />
+              <MusicNoteIcon className="w-5 h-5 text-pink-400" />
               TikTok Videos
             </Link>
 
-            {role === "admin" && (
+            <div className="pt-6 mt-6 border-t border-white/5">
               <Link
-                href="/admin"
+                href="/"
                 onClick={() => setIsOpen(false)}
-                className="block px-4 py-3 rounded-xl text-base font-medium text-amber-400 hover:bg-amber-500/10 mt-4"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-slate-300 hover:bg-white/5 transition-colors"
               >
-                Admin Panel
+                <Home className="w-5 h-5" />
+                Back to Home
               </Link>
-            )}
-
-            <form action="/api/auth/logout" method="post" className="pt-6 mt-6 border-t border-white/5">
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-medium text-red-400 hover:bg-red-500/10 transition-colors"
-              >
-                <LogOut className="w-5 h-5" />
-                Sign out
-              </button>
-            </form>
+            </div>
           </div>
         </div>
       )}

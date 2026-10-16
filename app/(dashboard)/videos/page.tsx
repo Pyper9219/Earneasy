@@ -1,12 +1,13 @@
 ﻿import Link from "next/link";
-import { Youtube, Music, BarChart3, Play, Sparkles } from "lucide-react";
+import { BarChart3, Sparkles } from "lucide-react";
+import { YoutubeIcon, TikTokIcon } from "@/components/ui/icons";
 
 export default function VideosPage() {
   const platforms = [
     {
       name: "YouTube Videos",
       description: "Watch curated YouTube videos and earn KES 50 per video completed.",
-      icon: Youtube,
+      icon: YoutubeIcon,
       gradient: "from-red-500 to-red-600",
       glow: "shadow-red-500/30",
       href: "/videos/youtube",
@@ -16,7 +17,7 @@ export default function VideosPage() {
     {
       name: "TikTok Videos",
       description: "Watch trending TikTok content and earn KES 50 per video completed.",
-      icon: Music,
+      icon: TikTokIcon,
       gradient: "from-pink-500 to-purple-600",
       glow: "shadow-pink-500/30",
       href: "/videos/tiktok",
@@ -52,11 +53,11 @@ export default function VideosPage() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {platforms.map((platform, i) => (
+        {platforms.map((platform) => (
           <Link
             key={platform.name}
             href={platform.href}
-            className="group glass rounded-2xl p-6 card-hover"
+            className="group rounded-2xl p-6 bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-emerald-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl"
           >
             <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${platform.gradient} flex items-center justify-center mb-5 shadow-lg ${platform.glow} group-hover:scale-110 transition-transform duration-300`}>
               <platform.icon className="w-7 h-7 text-white" />
@@ -74,7 +75,7 @@ export default function VideosPage() {
       </div>
 
       {/* How it works */}
-      <div className="glass rounded-2xl p-6">
+      <div className="rounded-2xl p-6 bg-white/[0.03] backdrop-blur-sm border border-white/[0.08]">
         <h2 className="text-lg font-bold text-white mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
           How Video Earnings Work
         </h2>

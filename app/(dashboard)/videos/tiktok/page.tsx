@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, CheckCircle2, Music, ArrowLeft, Sparkles, ExternalLink } from "lucide-react";
+import { Play, CheckCircle2, ArrowLeft, Sparkles, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { TikTokIcon, MusicNoteIcon } from "@/components/ui/icons";
 
 const TIKTOK_VIDEOS = [
   { id: "tiktok-1", title: "Money Making Tips 2026", author: "@financeguru", likes: "1.2M", duration: "0:45" },
@@ -56,7 +57,7 @@ export default function TikTokPage() {
         </Link>
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-pink-500/30">
-            <Music className="w-6 h-6 text-white" />
+            <TikTokIcon className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -93,7 +94,7 @@ export default function TikTokPage() {
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-24 right-6 z-50 glass-strong rounded-xl p-4 border border-pink-500/30 shadow-2xl shadow-pink-500/20"
+            className="fixed top-24 right-6 z-50 rounded-xl p-4 border border-pink-500/30 shadow-2xl shadow-pink-500/20 bg-[#0a1128]/95 backdrop-blur-xl"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center">
@@ -120,13 +121,13 @@ export default function TikTokPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="video-card glass rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-pink-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl"
             >
               {/* Thumbnail - vertical format */}
               <div className="relative aspect-[9/14] bg-gradient-to-br from-pink-900/50 to-purple-900/50 overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <Music className="w-12 h-12 text-pink-400/50 mx-auto mb-2" />
+                    <MusicNoteIcon className="w-12 h-12 text-pink-400/50 mx-auto mb-2" />
                     <div className="text-xs text-pink-300/70">{video.duration}</div>
                   </div>
                 </div>
@@ -178,7 +179,7 @@ export default function TikTokPage() {
                 ) : isPlaying ? (
                   <div className="space-y-2">
                     <a
-                      href={`https://www.tiktok.com`}
+                      href="https://www.tiktok.com"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold text-xs shadow-lg flex items-center justify-center gap-1.5"

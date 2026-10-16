@@ -27,25 +27,28 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
             <div>
               <h4 className="font-semibold text-white mb-4 text-sm">Platform</h4>
               <ul className="space-y-2.5">
-                {['Dashboard', 'Referrals', 'Earnings', 'Surveys'].map((item) => (
-                  <li key={item}><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">{item}</Link></li>
-                ))}
+                <li><Link href="/dashboard" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Dashboard</Link></li>
+                <li><Link href="/videos" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Watch & Earn</Link></li>
+                <li><Link href="/referrals" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Referrals</Link></li>
+                <li><Link href="/earnings" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Earnings</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold text-white mb-4 text-sm">Company</h4>
               <ul className="space-y-2.5">
-                {['About Us', 'Contact', 'Privacy Policy', 'Terms of Service'].map((item) => (
-                  <li key={item}><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">{item}</Link></li>
-                ))}
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">About Us</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Contact</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Privacy Policy</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold text-white mb-4 text-sm">Support</h4>
               <ul className="space-y-2.5">
-                {['Help Center', 'FAQ', 'Report Issue', 'Feedback'].map((item) => (
-                  <li key={item}><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">{item}</Link></li>
-                ))}
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Help Center</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">FAQ</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Report Issue</Link></li>
+                <li><Link href="#" className="text-sm text-slate-400 hover:text-emerald-400 transition-colors">Feedback</Link></li>
               </ul>
             </div>
           </div>

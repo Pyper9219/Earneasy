@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, CheckCircle2, Lock, Youtube, ArrowLeft, Sparkles } from "lucide-react";
+import { Play, CheckCircle2, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { YoutubeIcon } from "@/components/ui/icons";
 
 const YOUTUBE_VIDEOS = [
   { id: "dQw4w9WgXcQ", title: "How to Build Wealth Online", duration: "10:24", category: "Finance" },
@@ -54,7 +55,7 @@ export default function YouTubePage() {
         </Link>
         <div className="flex items-center gap-3 mb-2">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/30">
-            <Youtube className="w-6 h-6 text-white" />
+            <YoutubeIcon className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -91,7 +92,7 @@ export default function YouTubePage() {
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-24 right-6 z-50 glass-strong rounded-xl p-4 border border-emerald-500/30 shadow-2xl shadow-emerald-500/20"
+            className="fixed top-24 right-6 z-50 rounded-xl p-4 border border-emerald-500/30 shadow-2xl shadow-emerald-500/20 bg-[#0a1128]/95 backdrop-blur-xl"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
@@ -118,7 +119,7 @@ export default function YouTubePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="video-card glass rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden bg-white/[0.03] backdrop-blur-sm border border-white/[0.08] hover:border-emerald-500/30 transition-all hover:-translate-y-1 hover:shadow-2xl"
             >
               {/* Thumbnail */}
               <div className="relative aspect-video bg-slate-900 overflow-hidden">

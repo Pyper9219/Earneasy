@@ -1,13 +1,11 @@
 ﻿import Link from "next/link";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import type { ReactNode } from "react";
 import MobileNavButton from "@/components/dashboard/MobileNavButton";
 import {
   LayoutDashboard, Users, Wallet, Video, Settings, LogOut,
-  Zap, TrendingUp, Gift, Youtube, Music, BarChart3
+  Zap, TrendingUp, Gift, BarChart3
 } from "lucide-react";
+import { YoutubeIcon, MusicNoteIcon } from "@/components/ui/icons";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -19,14 +17,18 @@ const NAV = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export default async function DashboardLayout({
+// Demo user for public access (no auth required)
+const DEMO_USER = {
+  email: "guest@earneasy.co.ke",
+  role: "user" as const,
+};
+
+export default function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  if (!session) redirect("/login");
+  const session = DEMO_USER;
 
   return (
     <div className="min-h-screen flex bg-[#050b1a]">
@@ -34,7 +36,7 @@ export default async function DashboardLayout({
       <aside className="w-72 bg-[#0a1128] border-r border-white/5 hidden md:flex flex-col fixed h-screen">
         {/* Logo */}
         <div className="p-6 border-b border-white/5">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-shadow">
               <Zap className="w-5 h-5 text-white" />
             </div>
@@ -42,7 +44,7 @@ export default async function DashboardLayout({
               <div className="font-bold text-lg text-white tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Earn<span className="text-emerald-400">Easy</span>
               </div>
-              <div className="text-xs text-slate-500">Member Dashboard</div>
+              <div className="text-xs text-slate-500">Public Demo Mode</div>
             </div>
           </Link>
         </div>
@@ -56,9 +58,9 @@ export default async function DashboardLayout({
             <Link
               key={item.href}
               href={item.href}
-              className="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all"
             >
-              <item.icon className="w-4.5 h-4.5" />
+              <item.icon className="w-[18px] h-[18px]" />
               <span className="flex-1">{item.label}</span>
               {item.badge && (
                 <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
@@ -71,54 +73,40 @@ export default async function DashboardLayout({
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2 mt-6">
             Video Platforms
           </div>
-          <Link href="/videos/youtube" className="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
-            <Youtube className="w-4.5 h-4.5 text-red-400" />
+          <Link href="/videos/youtube" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-red-500/10 hover:text-red-400 transition-all">
+            <YoutubeIcon className="w-[18px] h-[18px] text-red-400" />
             <span>YouTube Videos</span>
           </Link>
-          <Link href="/videos/tiktok" className="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
-            <Music className="w-4.5 h-4.5 text-pink-400" />
+          <Link href="/videos/tiktok" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-pink-500/10 hover:text-pink-400 transition-all">
+            <MusicNoteIcon className="w-[18px] h-[18px] text-pink-400" />
             <span>TikTok Videos</span>
           </Link>
-          <Link href="/videos/earnings" className="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300">
-            <BarChart3 className="w-4.5 h-4.5 text-cyan-400" />
+          <Link href="/videos/earnings" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-cyan-500/10 hover:text-cyan-400 transition-all">
+            <BarChart3 className="w-[18px] h-[18px] text-cyan-400" />
             <span>Video Earnings</span>
           </Link>
-
-          {session.role === "admin" && (
-            <>
-              <div className="text-xs font-semibold text-amber-500/70 uppercase tracking-wider px-3 py-2 mt-6">
-                Admin
-              </div>
-              <Link href="/admin" className="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-amber-400">
-                <Zap className="w-4.5 h-4.5" />
-                <span>Admin Panel</span>
-              </Link>
-            </>
-          )}
         </nav>
 
-        {/* User + Logout */}
+        {/* User Info */}
         <div className="p-4 border-t border-white/5">
-          <div className="glass rounded-xl p-3 mb-3">
+          <div className="rounded-xl p-3 mb-3 bg-white/[0.03] backdrop-blur-sm border border-white/[0.08]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center text-white font-bold">
-                {session.email?.[0]?.toUpperCase() || "U"}
+                G
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold text-white truncate">{session.email}</div>
-                <div className="text-xs text-emerald-400 capitalize">{session.role}</div>
+                <div className="text-xs text-amber-400">Demo Mode</div>
               </div>
             </div>
           </div>
-          <form action="/api/auth/logout" method="post">
-            <button
-              type="submit"
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
-          </form>
+          <Link
+            href="/"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+          >
+            <LogOut className="w-4 h-4" />
+            Back to Home
+          </Link>
         </div>
       </aside>
 

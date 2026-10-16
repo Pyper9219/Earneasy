@@ -22,7 +22,7 @@ export default function SurveysHub({
   totalSurveyEarnings,
 }: {
   surveys: SurveyItem[];
-  totalSurveyEarnings: number;
+  totalSurveyEarnings: number | null;
 }) {
   const [filter, setFilter] = useState<SurveyFilter>("All");
   const filteredSurveys = useMemo(
@@ -37,13 +37,21 @@ export default function SurveysHub({
 
   return (
     <>
-      <section className="mb-8 grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 p-6">
-          <p className="mb-1 text-sm font-medium text-emerald-400">
-            Survey earnings to date
-          </p>
-          <p className="text-3xl font-extrabold">KES {totalSurveyEarnings}</p>
-        </div>
+      <section
+        className={`mb-8 grid gap-4 ${
+          totalSurveyEarnings === null ? "grid-cols-1" : "md:grid-cols-2"
+        }`}
+      >
+        {totalSurveyEarnings !== null && (
+          <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 p-6">
+            <p className="mb-1 text-sm font-medium text-emerald-400">
+              Survey earnings to date
+            </p>
+            <p className="text-3xl font-extrabold">
+              KES {totalSurveyEarnings}
+            </p>
+          </div>
+        )}
         <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
           <p className="mb-1 text-sm font-medium text-slate-400">
             Surveys currently available

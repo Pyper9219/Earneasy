@@ -17,15 +17,25 @@ type SurveyHubUser = Pick<
 export default async function SurveysPage() {
   const token = cookies().get(SESSION_COOKIE)?.value;
   const session = token ? verifySessionToken(token) : null;
-  if (!session) redirect("/login");
 
   await connectDB();
-  const user = await User.findById(session.userId)
-    .select("hasPaid isActivated totalSurveyEarnings")
-    .lean<SurveyHubUser | null>();
-  if (!user) redirect("/login");
+  const [user, surveys] = await Promise.all([
+    session
+      ? User.findById(session.userId)
+          .select("hasPaid isActivated totalSurveyEarnings")
+          .lean<SurveyHubUser | null>()
+      : Promise.resolve(null),
+    Survey.find({
+      isActive: true,
+      slotsRemaining: { $gt: 0 },
+    })
+      .sort({ rewardKES: -1 })
+      .lean(),
+  ]);
 
-  if (!user.hasPaid && !user.isActivated) {
+  if (session && !user) redirect("/login");
+
+  if (session && user && !user.hasPaid && !user.isActivated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#0B1326] p-4 text-white">
         <section className="w-full max-w-md rounded-2xl border border-amber-500/30 bg-white/5 p-8 text-center">
@@ -44,13 +54,6 @@ export default async function SurveysPage() {
     );
   }
 
-  const surveys = await Survey.find({
-    isActive: true,
-    slotsRemaining: { $gt: 0 },
-  })
-    .sort({ rewardKES: -1 })
-    .lean();
-
   return (
     <main className="min-h-screen bg-[#0B1326] p-4 text-white md:p-8">
       <div className="mx-auto max-w-6xl">
@@ -62,8 +65,13 @@ export default async function SurveysPage() {
             Daily Paid Surveys
           </h1>
           <p className="mt-2 text-slate-400">
-            Browse surveys currently available for your account.
+            Browse surveys currently available.
           </p>
+          {!session && (
+            <p className="mt-3 text-sm text-slate-400">
+              Sign in and activate your account to take part in surveys.
+            </p>
+          )}
         </header>
 
         <SurveysHub
@@ -77,7 +85,7 @@ export default async function SurveysPage() {
             slotsRemaining: survey.slotsRemaining,
             isHighDemand: Boolean(survey.isHighDemand),
           }))}
-          totalSurveyEarnings={user.totalSurveyEarnings ?? 0}
+          totalSurveyEarnings={session ? user?.totalSurveyEarnings ?? 0 : null}
         />
       </div>
     </main>
