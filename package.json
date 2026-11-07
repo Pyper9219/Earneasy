@@ -10,6 +10,7 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@types/jsonwebtoken": "^9.0.10",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
@@ -40,5 +41,26 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true
+=======
+    "next": "14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "mongoose": "^8.5.1",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.6.3",
+    "zod": "^3.23.8",
+    "axios": "^1.7.2",
+    "nanoid": "^5.0.7",
+    "clsx": "^2.1.1",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/bcryptjs": "^2.4.6",
+    "tsx": "^4.16.2",
+    "dotenv": "^16.4.5"
+>>>>>>> 33073f7 (Initial commit)
   }
 }

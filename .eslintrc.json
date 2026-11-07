@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 {
   "extends": ["next/core-web-vitals"]
+=======
+{
+  "extends": ["next/core-web-vitals"]
+>>>>>>> 33073f7 (Initial commit)
 }
