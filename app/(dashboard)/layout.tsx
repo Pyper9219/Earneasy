@@ -1,7 +1,8 @@
-<<<<<<< HEAD
 ﻿import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import type { ReactNode } from "react";
-import MobileNavButton from "@/components/dashboard/MobileNavButton";
 import {
   LayoutDashboard, Users, Wallet, Video, Settings, LogOut,
   Zap, TrendingUp, Gift, BarChart3
@@ -18,18 +19,14 @@ const NAV = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-// Demo user for public access (no auth required)
-const DEMO_USER = {
-  email: "guest@earneasy.co.ke",
-  role: "user" as const,
-};
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const session = DEMO_USER;
+  const token = cookies().get(SESSION_COOKIE)?.value;
+  const session = token ? await verifySessionToken(token) : null;
+  if (!session) redirect("/login");
 
   return (
     <div className="min-h-screen flex bg-[#050b1a]">
@@ -93,27 +90,25 @@ export default function DashboardLayout({
           <div className="rounded-xl p-3 mb-3 bg-white/[0.03] backdrop-blur-sm border border-white/[0.08]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center text-white font-bold">
-                G
+                {session.email.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold text-white truncate">{session.email}</div>
-                <div className="text-xs text-amber-400">Demo Mode</div>
+                <div className="text-xs text-amber-400">{session.role === "admin" ? "Admin" : "User"}</div>
               </div>
             </div>
           </div>
-          <Link
-            href="/"
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Back to Home
-          </Link>
+          <form action="/api/auth/logout" method="post" className="w-full">
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
-
-      <MobileNavButton
-        items={NAV.map(({ href, label }) => ({ href, label }))}
-      />
 
       <main className="flex-1 md:ml-72 min-h-screen">
         <div className="max-w-7xl mx-auto p-6 md:p-10">
@@ -123,70 +118,3 @@ export default function DashboardLayout({
     </div>
   );
 }
-=======
-import Link from "next/link";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
-import type { ReactNode } from "react";
-
-const NAV = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/referrals", label: "Referrals" },
-  { href: "/referrals/invite", label: "Invite" },
-  { href: "/earnings", label: "Earn" },
-  { href: "/payouts", label: "Payouts" },
-  { href: "/settings", label: "Settings" },
-  { href: "/chat", label: "Chat" },
-];
-
-export default async function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  if (!session) redirect("/login");
-
-  return (
-    <div className="min-h-screen flex bg-slate-50">
-      <aside className="w-64 bg-white border-r hidden md:flex flex-col">
-        <div className="p-6 border-b">
-          <Link href="/dashboard" className="text-xl font-bold text-emerald-600">
-            EarnEasy
-          </Link>
-        </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
-            >
-              {item.label}
-            </Link>
-          ))}
-          {session.role === "admin" && (
-            <Link
-              href="/admin"
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-amber-700 hover:bg-amber-50"
-            >
-              Admin
-            </Link>
-          )}
-        </nav>
-        <form action="/api/auth/logout" method="post" className="p-4 border-t">
-          <button
-            type="submit"
-            className="w-full text-sm text-slate-600 hover:text-red-600 text-left"
-          >
-            Sign out
-          </button>
-        </form>
-      </aside>
-      <main className="flex-1 p-6 md:p-10">{children}</main>
-    </div>
-  );
-}
->>>>>>> 33073f7 (Initial commit)
