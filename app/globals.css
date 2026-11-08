@@ -178,3 +178,48 @@ a { color: inherit; text-decoration: none; }
   background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
   pointer-events: none;
 }
+
+
+/* ------------------------------------------------------------------
+   Dashboard dark theme.
+   Several dashboard pages were written with light card styles
+   (bg-white, slate text). Inside the dark shell that meant white
+   text on white cards, so these utilities are remapped here.
+   Only pages inside .dashboard-shell are affected.
+   ------------------------------------------------------------------ */
+.dashboard-shell .bg-white {
+  background-color: rgba(255, 255, 255, 0.045);
+}
+.dashboard-shell .bg-white.keep-light {
+  background-color: #ffffff !important;
+}
+.dashboard-shell .bg-slate-50 {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.dashboard-shell .bg-slate-100 {
+  background-color: rgba(255, 255, 255, 0.09);
+}
+.dashboard-shell .text-slate-900,
+.dashboard-shell .text-slate-800,
+.dashboard-shell .text-slate-700 {
+  color: #e2e8f0;
+}
+.dashboard-shell .text-slate-600 {
+  color: #a7b3c7;
+}
+.dashboard-shell .text-slate-500 {
+  color: #94a3b8;
+}
+.dashboard-shell .border {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dashboard-shell .divide-y > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dashboard-shell .hover\:bg-slate-50:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.dashboard-shell table thead {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}

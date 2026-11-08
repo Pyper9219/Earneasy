@@ -42,7 +42,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-[#050b1a]">
+    <div className="dashboard-shell min-h-screen flex bg-[#050b1a]">
       {/* Premium Sidebar */}
       <aside className="w-72 bg-[#0a1128] border-r border-white/5 hidden md:flex flex-col fixed h-screen">
         {/* Logo */}

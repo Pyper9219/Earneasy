@@ -249,7 +249,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/videos"
-            className="btn-shine px-6 py-3 rounded-xl bg-white text-blue-700 font-bold shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+            className="btn-shine px-6 py-3 rounded-xl bg-white text-blue-700 keep-light font-bold shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
           >
             Start Watching
             <ArrowUpRight className="w-4 h-4" />
