@@ -46,7 +46,13 @@ const STATUS_STYLES: Record<string, string> = {
   failed: "bg-rose-500/15 text-rose-300 border border-rose-500/30",
 };
 
-export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
+export default function PayoutQueue({
+  payouts,
+  b2cEnabled = false,
+}: {
+  payouts: PayoutItem[];
+  b2cEnabled?: boolean;
+}) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +96,15 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
 
   return (
     <div className="space-y-4">
+      {!b2cEnabled && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          <strong>Automatic payouts are OFF.</strong> Approving a request does not
+          send money. Pay the user yourself with M-Pesa, then click
+          &ldquo;Mark paid&rdquo; to record it. Enable this only after PalPluss B2C
+          is active on your account.
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <span className="px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
           {pendingCount} awaiting approval
@@ -175,7 +190,7 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
                         disabled={busyId === p._id}
                         className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs hover:bg-emerald-700 disabled:opacity-50"
                       >
-                        Mark paid
+                        {b2cEnabled ? "Mark paid" : "Mark paid (manual)"}
                       </button>
                       <button
                         onClick={() => act(p._id, "reject")}

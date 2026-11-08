@@ -40,7 +40,10 @@ export default async function AdminPayoutsPage() {
         <h1 className="text-3xl font-bold">Payout Queue</h1>
         <p className="text-slate-500 mt-1">Approve or reject withdrawal requests.</p>
       </header>
-      <PayoutQueue payouts={serialized} />
+      <PayoutQueue
+        payouts={serialized}
+        b2cEnabled={process.env.PALPLUSS_B2C === "true"}
+      />
     </div>
   );
 }
