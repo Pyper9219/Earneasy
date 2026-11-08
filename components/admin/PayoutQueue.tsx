@@ -15,6 +15,7 @@ interface PayoutItem {
     network?: string;
   };
   user: { name: string; email: string };
+  failureReason?: string;
 }
 
 const METHOD_LABELS: Record<string, string> = {
@@ -61,7 +62,7 @@ export default function PayoutQueue({
 
   async function act(
     id: string,
-    action: "approve" | "reject" | "mark_paid"
+    action: "approve" | "reject" | "mark_paid" | "pay_now"
   ) {
     let reason: string | undefined;
     if (action === "reject") {
@@ -163,6 +164,11 @@ export default function PayoutQueue({
                   >
                     {p.status}
                   </span>
+                  {p.failureReason && (
+                    <p className="mt-1 text-[11px] text-rose-300/80 max-w-[220px]">
+                      {p.failureReason}
+                    </p>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-right whitespace-nowrap space-x-2">
                   {p.status === "pending" && (
@@ -185,6 +191,15 @@ export default function PayoutQueue({
                   )}
                   {(p.status === "approved" || p.status === "processing") && (
                     <>
+                      {b2cEnabled && ["mpesa", "mobile_money"].includes(p.destination.type) && (
+                        <button
+                          onClick={() => act(p._id, "pay_now")}
+                          disabled={busyId === p._id}
+                          className="px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs hover:bg-sky-700 disabled:opacity-50"
+                        >
+                          Send payout
+                        </button>
+                      )}
                       <button
                         onClick={() => act(p._id, "mark_paid")}
                         disabled={busyId === p._id}

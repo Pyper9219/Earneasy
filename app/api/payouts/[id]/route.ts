@@ -56,7 +56,7 @@ import { z } from "zod";
 export const dynamic = "force-dynamic";
 
 const actionSchema = z.object({
-  action: z.enum(["approve", "reject", "mark_paid"]),
+  action: z.enum(["approve", "reject", "mark_paid", "pay_now"]),
   reason: z.string().max(300).optional(),
 });
 
@@ -102,7 +102,7 @@ export async function PATCH(
       // releases funds unless the operator opts in.
       if (
         process.env.PALPLUSS_B2C === "true" &&
-        payout.destination.type === "mobile_money"
+        ["mpesa", "mobile_money"].includes(payout.destination.type)
       ) {
         try {
           const tx = await initiateB2CPayout({
@@ -113,7 +113,7 @@ export async function PATCH(
           });
 
           payout.transactionId = tx.transactionId;
-          if (tx.status === "SUCCESS") {
+          if (tx.status === "SUCCESS" || tx.status === "COMPLETED") {
             payout.status = "completed";
             payout.paidAt = new Date();
             await payout.save();
@@ -137,6 +137,51 @@ export async function PATCH(
         payout,
         payout.status === "completed" ? "paid" : "approved"
       );
+
+      return NextResponse.json({ payout });
+    }
+
+    if (action === "pay_now") {
+      if (process.env.PALPLUSS_B2C !== "true") {
+        throw new AppError(
+          "Automatic payouts are off. Set PALPLUSS_B2C=true first.",
+          409,
+          "B2C_OFF"
+        );
+      }
+      if (!["approved", "processing"].includes(payout.status)) {
+        throw new AppError("Only approved payouts can be sent", 409, "NOT_APPROVED");
+      }
+      if (!["mpesa", "mobile_money"].includes(payout.destination.type)) {
+        throw new AppError(
+          "Automatic payouts only support M-Pesa. Pay this one manually.",
+          422,
+          "NOT_MPESA"
+        );
+      }
+
+      const sent = await initiateB2CPayout({
+        phone: payout.destination.accountNumber,
+        amount: payout.amount,
+        reference: payout.reference,
+        description: "EarnEasy withdrawal",
+      });
+
+      payout.transactionId = sent.transactionId;
+      payout.failureReason = undefined;
+      if (sent.status === "SUCCESS" || sent.status === "COMPLETED") {
+        payout.status = "completed";
+        payout.paidAt = new Date();
+        await payout.save();
+        await Wallet.findOneAndUpdate(
+          { userId: payout.userId },
+          { $inc: { totalWithdrawn: payout.amount } }
+        );
+        await notify(payout, "paid");
+      } else {
+        payout.status = "processing";
+        await payout.save();
+      }
 
       return NextResponse.json({ payout });
     }
