@@ -4,13 +4,32 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  Wallet, TrendingUp, Users, Video, ArrowUpRight, ArrowDownRight,
+  Wallet, TrendingUp, Users, Video, ArrowUpRight, ArrowDownRight, MessageCircle,
   Gift, Zap, Clock, CheckCircle2, PlayCircle
 } from "lucide-react";
 
 export default function DashboardPage() {
   const [videoBalance, setVideoBalance] = useState(0);
   const [videosWatched, setVideosWatched] = useState(0);
+  const [account, setAccount] = useState<{
+    referralEarnings: number;
+    referralCount: number;
+    chatEarnings: number;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data?.user) return;
+        setAccount({
+          referralEarnings: data.user.referralEarnings ?? 0,
+          referralCount: data.user.referralCount ?? 0,
+          chatEarnings: data.user.chatEarnings ?? 0,
+        });
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("earneasy_video_balance");
@@ -19,10 +38,10 @@ export default function DashboardPage() {
     if (watched) setVideosWatched(parseInt(watched) || 0);
   }, []);
 
-  // Demo referral balance (would come from API in production)
-  const referralBalance = 2500;
-  const referralCount = 10;
-  const totalEarnings = videoBalance + referralBalance;
+  const referralBalance = account?.referralEarnings ?? 0;
+  const referralCount = account?.referralCount ?? 0;
+  const chatEarnings = account?.chatEarnings ?? 0;
+  const totalEarnings = videoBalance + referralBalance + chatEarnings;
 
   const stats = [
     {
@@ -37,16 +56,25 @@ export default function DashboardPage() {
     {
       label: "Referral Balance",
       value: `KES ${referralBalance.toLocaleString()}`,
-      sub: `${referralCount} active referrals`,
+      sub: `${referralCount} referral${referralCount === 1 ? "" : "s"} in your tree`,
       icon: Users,
       gradient: "from-emerald-500 to-teal-600",
       glow: "shadow-emerald-500/30",
       href: "/referrals",
     },
     {
+      label: "Chat Earnings",
+      value: `KES ${chatEarnings.toLocaleString()}`,
+      sub: "From conversations",
+      icon: MessageCircle,
+      gradient: "from-rose-500 to-pink-600",
+      glow: "shadow-rose-500/30",
+      href: "/chat",
+    },
+    {
       label: "Total Earnings",
       value: `KES ${totalEarnings.toLocaleString()}`,
-      sub: "Video bonus + Referrals",
+      sub: "Video + referrals + chat",
       icon: Wallet,
       gradient: "from-purple-500 to-pink-600",
       glow: "shadow-purple-500/30",

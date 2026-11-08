@@ -11,6 +11,7 @@ export interface IUser {
   isActivated: boolean;
   walletBalance: number;
   totalSurveyEarnings: number;
+  chatEarnings: number;
   referralCode?: string;
   referredBy?: string;
   createdAt: Date;
@@ -27,6 +28,7 @@ const UserSchema = new Schema<IUser>({
   isActivated: { type: Boolean, default: false },
   walletBalance: { type: Number, default: 0 },
   totalSurveyEarnings: { type: Number, default: 0 },
+  chatEarnings: { type: Number, default: 0 },
   referralCode: { type: String },
   referredBy: { type: String },
 }, { timestamps: true });
