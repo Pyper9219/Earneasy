@@ -11,6 +11,8 @@ import {
   Zap, TrendingUp, Gift, BarChart3, MessageCircle
 } from "lucide-react";
 import { YoutubeIcon, MusicNoteIcon } from "@/components/ui/icons";
+import MobileNav from "@/components/dashboard/MobileNav";
+import IdleLogout from "@/components/auth/IdleLogout";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -46,6 +48,12 @@ export default async function DashboardLayout({
 
   return (
     <div className="dashboard-shell min-h-screen flex bg-[#050b1a]">
+      <IdleLogout />
+      <MobileNav
+        items={NAV.map(({ href, label, badge }) => ({ href, label, badge }))}
+        email={session.email}
+        isAdmin={isAdmin}
+      />
       {/* Premium Sidebar */}
       <aside className="w-72 bg-[#0a1128] border-r border-white/5 hidden md:flex flex-col fixed h-screen">
         {/* Logo */}
@@ -133,7 +141,7 @@ export default async function DashboardLayout({
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-72 min-h-screen">
+      <main className="flex-1 md:ml-72 min-h-screen pb-24 md:pb-0">
         <div className="max-w-7xl mx-auto p-6 md:p-10">
           {children}
         </div>

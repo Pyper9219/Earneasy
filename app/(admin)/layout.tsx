@@ -6,6 +6,7 @@ import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/User";
 import { isAdminSession } from "@/lib/auth/admin";
+import IdleLogout from "@/components/auth/IdleLogout";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   return (
     <div className="dashboard-shell min-h-screen bg-[#050b1a] text-slate-200">
+      <IdleLogout />
       <header className="border-b border-white/10 bg-[#0a1128]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center gap-6">
           <div>
