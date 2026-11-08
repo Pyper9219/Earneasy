@@ -7,13 +7,14 @@ import { User } from "@/lib/db/models/User";
 import type { ReactNode } from "react";
 import {
   LayoutDashboard, Users, Wallet, Video, Settings, LogOut,
-  Zap, TrendingUp, Gift, BarChart3
+  Zap, TrendingUp, Gift, BarChart3, MessageCircle
 } from "lucide-react";
 import { YoutubeIcon, MusicNoteIcon } from "@/components/ui/icons";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/videos", label: "Watch & Earn", icon: Video, badge: "NEW" },
+  { href: "/chat", label: "Chat & Earn", icon: MessageCircle, badge: "HOT" },
   { href: "/referrals", label: "Referrals", icon: Users },
   { href: "/referrals/invite", label: "Invite Friends", icon: Gift },
   { href: "/earnings", label: "Earnings", icon: TrendingUp },

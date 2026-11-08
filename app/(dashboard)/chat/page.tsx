@@ -46,8 +46,8 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0B1326] text-white">
-      <section className="relative px-4 py-16 text-center max-w-5xl mx-auto border-b border-white/10">
+    <div className="text-white">
+      <section className="relative pb-10 text-center max-w-5xl mx-auto border-b border-white/10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-medium mb-6">
           <MessageCircle className="w-4 h-4" /> Premium Chat Service
         </div>
@@ -64,7 +64,7 @@ export default function ChatPage() {
         </div>
       </section>
 
-      <section className="px-4 py-12 max-w-7xl mx-auto">
+      <section className="py-8 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-12">Available Chat Partners</h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {PROFILES.map((profile) => (
@@ -140,6 +140,6 @@ export default function ChatPage() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
