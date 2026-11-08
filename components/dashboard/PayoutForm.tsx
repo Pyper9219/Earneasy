@@ -2,29 +2,76 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { MIN_PAYOUT_KES } from "@/lib/utils/constants";
 
 interface PayoutFormProps {
   availableBalance: number;
 }
 
+type MethodId = "mpesa" | "paypal" | "flutterwave" | "eversend";
+
+const METHODS: Array<{
+  id: MethodId;
+  label: string;
+  inputLabel: string;
+  placeholder: string;
+  hint: string;
+  inputType: "tel" | "email" | "text";
+}> = [
+  {
+    id: "mpesa",
+    label: "M-Pesa",
+    inputLabel: "M-Pesa phone number",
+    placeholder: "0712345678",
+    hint: "Safaricom number that will receive the money.",
+    inputType: "tel",
+  },
+  {
+    id: "paypal",
+    label: "PayPal",
+    inputLabel: "PayPal email",
+    placeholder: "you@example.com",
+    hint: "The email on your PayPal account.",
+    inputType: "email",
+  },
+  {
+    id: "flutterwave",
+    label: "Flutterwave",
+    inputLabel: "Flutterwave account (email or ID)",
+    placeholder: "you@example.com",
+    hint: "The account or email registered on Flutterwave.",
+    inputType: "text",
+  },
+  {
+    id: "eversend",
+    label: "Eversend",
+    inputLabel: "Eversend email or phone",
+    placeholder: "you@example.com",
+    hint: "The email or phone on your Eversend wallet.",
+    inputType: "text",
+  },
+];
+
 export default function PayoutForm({ availableBalance }: PayoutFormProps) {
   const router = useRouter();
   const [amount, setAmount] = useState("");
-  const [type, setType] = useState<"bank" | "mobile_money">("mobile_money");
+  const [method, setMethod] = useState<MethodId>("mpesa");
   const [accountNumber, setAccountNumber] = useState("");
-  const [bankCode, setBankCode] = useState("");
-  const [network, setNetwork] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const active = METHODS.find((m) => m.id === method)!;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     const numAmount = Number(amount);
-    if (!numAmount || numAmount < 1) {
-      setError("Enter a valid amount");
+    if (!numAmount || numAmount < MIN_PAYOUT_KES) {
+      setError(`Minimum withdrawal is KES ${MIN_PAYOUT_KES}`);
       setLoading(false);
       return;
     }
@@ -33,18 +80,8 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
       setLoading(false);
       return;
     }
-    if (!accountNumber) {
-      setError("Enter account/phone number");
-      setLoading(false);
-      return;
-    }
-    if (type === "bank" && !bankCode) {
-      setError("Enter bank code");
-      setLoading(false);
-      return;
-    }
-    if (type === "mobile_money" && !network) {
-      setError("Enter network (e.g., MPESA, AIRTEL)");
+    if (!accountNumber.trim()) {
+      setError(`Enter your ${active.inputLabel.toLowerCase()}`);
       setLoading(false);
       return;
     }
@@ -56,10 +93,9 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
         body: JSON.stringify({
           amount: numAmount,
           destination: {
-            type,
-            accountNumber,
-            bankCode: type === "bank" ? bankCode : undefined,
-            network: type === "mobile_money" ? network : undefined,
+            type: method,
+            accountNumber: accountNumber.trim(),
+            ...(method === "mpesa" ? { network: "M-PESA" } : {}),
           },
         }),
       });
@@ -70,6 +106,11 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
         return;
       }
 
+      setSuccess(
+        `Withdrawal request sent. It is now waiting for admin approval.`
+      );
+      setAmount("");
+      setAccountNumber("");
       router.refresh();
     } catch {
       setError("Something went wrong");
@@ -80,104 +121,97 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
 
   return (
     <section className="bg-white rounded-2xl border p-6">
-      <h2 className="font-semibold text-lg mb-4">Request Payout</h2>
+      <h2 className="font-semibold text-lg mb-1">Request Withdrawal</h2>
+      <p className="text-sm text-slate-500 mb-4">
+        Choose where you want to receive the money.
+      </p>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
+            {error}
+          </div>
         )}
+        {success && (
+          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+            {success}
+          </div>
+        )}
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Withdrawal method</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {METHODS.map((m) => {
+              const selected = m.id === method;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setMethod(m.id);
+                    setAccountNumber("");
+                    setError("");
+                  }}
+                  aria-pressed={selected}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-medium border transition ${
+                    selected
+                      ? "border-emerald-500/60 bg-emerald-500/15 text-emerald-300"
+                      : "border-white/10 bg-white/[0.03] text-slate-300 hover:bg-white/[0.07]"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Amount (KES)</label>
             <input
               type="number"
-              min="1"
+              min={MIN_PAYOUT_KES}
               max={availableBalance}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full rounded-lg border px-3 py-2"
               placeholder="0"
               required
             />
-            <p className="text-xs text-slate-500 mt-1">Available: KES {availableBalance}</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Available: KES {availableBalance} · Minimum: KES {MIN_PAYOUT_KES}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Payout Method</label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="mobile_money"
-                  checked={type === "mobile_money"}
-                  onChange={() => setType("mobile_money")}
-                  className="text-emerald-600"
-                />
-                Mobile Money
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  value="bank"
-                  checked={type === "bank"}
-                  onChange={() => setType("bank")}
-                  className="text-emerald-600"
-                />
-                Bank Transfer
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            {type === "bank" ? "Account Number" : "Phone Number"}
-          </label>
-          <input
-            type="text"
-            value={accountNumber}
-            onChange={(e) => setAccountNumber(e.target.value)}
-            className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-            placeholder={type === "bank" ? "Account number" : "Phone number (e.g., 2547xxxxxxxx)"}
-            required
-          />
-        </div>
-
-        {type === "bank" && (
-          <div>
-            <label className="block text-sm font-medium mb-1">Bank Code</label>
+            <label className="block text-sm font-medium mb-1">
+              {active.inputLabel}
+            </label>
             <input
-              type="text"
-              value={bankCode}
-              onChange={(e) => setBankCode(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Bank code"
+              type={active.inputType}
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2"
+              placeholder={active.placeholder}
               required
             />
+            <p className="text-xs text-slate-500 mt-1">{active.hint}</p>
           </div>
-        )}
-
-        {type === "mobile_money" && (
-          <div>
-            <label className="block text-sm font-medium mb-1">Network</label>
-            <input
-              type="text"
-              value={network}
-              onChange={(e) => setNetwork(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="MPESA, AIRTEL, etc."
-              required
-            />
-          </div>
-        )}
+        </div>
 
         <button
           type="submit"
           disabled={loading}
           className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Processing..." : "Request Payout"}
+          {loading ? "Sending request..." : "Request Withdrawal"}
         </button>
+
+        <p className="text-xs text-slate-500 text-center">
+          Withdrawals are reviewed by an admin before payment. You will get an
+          email at every step.
+        </p>
       </form>
     </section>
   );

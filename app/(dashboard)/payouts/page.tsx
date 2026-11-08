@@ -43,13 +43,14 @@ export default async function PayoutsPage() {
             <tr>
               <th className="text-left px-4 py-3">Date</th>
               <th className="text-right px-4 py-3">Amount</th>
+              <th className="text-left px-4 py-3">Method</th>
               <th className="text-left px-4 py-3">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y">
             {payouts.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-slate-500">
+                <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
                   No payout requests yet.
                 </td>
               </tr>
@@ -60,6 +61,15 @@ export default async function PayoutsPage() {
                   {new Date(p.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right">KES {p.amount}</td>
+                <td className="px-4 py-3 text-xs capitalize">
+                  {p.destination?.type === "mpesa"
+                    ? "M-Pesa"
+                    : p.destination?.type === "mobile_money"
+                      ? "Mobile money"
+                      : p.destination?.type === "bank"
+                        ? "Bank"
+                        : (p.destination?.type ?? "—")}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${

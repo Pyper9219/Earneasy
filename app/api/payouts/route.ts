@@ -75,10 +75,15 @@ export async function POST(req: NextRequest) {
       .lean<{ name?: string; email?: string } | null>();
 
     if (account?.email) {
-      const destLabel =
-        destination.type === "mobile_money"
-          ? `${destination.network ?? "Mobile money"} ${destination.accountNumber}`
-          : `Bank ${destination.bankCode ?? ""} ${destination.accountNumber}`;
+      const METHOD_LABELS: Record<string, string> = {
+        mpesa: "M-Pesa",
+        paypal: "PayPal",
+        flutterwave: "Flutterwave",
+        eversend: "Eversend",
+        mobile_money: destination.network || "Mobile money",
+        bank: "Bank transfer",
+      };
+      const destLabel = `${METHOD_LABELS[destination.type] ?? destination.type} · ${destination.accountNumber}`;
 
       await sendWithdrawalRequestedEmail({
         to: account.email,

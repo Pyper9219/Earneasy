@@ -17,6 +17,26 @@ interface PayoutItem {
   user: { name: string; email: string };
 }
 
+const METHOD_LABELS: Record<string, string> = {
+  mpesa: "M-Pesa",
+  paypal: "PayPal",
+  flutterwave: "Flutterwave",
+  eversend: "Eversend",
+  mobile_money: "Mobile money",
+  bank: "Bank transfer",
+};
+
+function destinationLabel(d: PayoutItem["destination"]): string {
+  const method = METHOD_LABELS[d.type] ?? d.type;
+  const detail =
+    d.type === "bank"
+      ? `${d.bankCode ?? ""} ${d.accountNumber}`.trim()
+      : d.type === "mobile_money"
+        ? `${d.network ?? ""} ${d.accountNumber}`.trim()
+        : d.accountNumber;
+  return `${method} · ${detail}`;
+}
+
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-500/15 text-amber-300 border border-amber-500/30",
   approved: "bg-sky-500/15 text-sky-300 border border-sky-500/30",
@@ -115,9 +135,7 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
                   KES {p.amount}
                 </td>
                 <td className="px-4 py-3 text-xs">
-                  {p.destination.type === "mobile_money"
-                    ? `${p.destination.network ?? "Mobile"} · ${p.destination.accountNumber}`
-                    : `Bank ${p.destination.bankCode} · ${p.destination.accountNumber}`}
+                  {destinationLabel(p.destination)}
                 </td>
                 <td className="px-4 py-3 text-xs text-slate-500">
                   {new Date(p.createdAt).toLocaleString()}

@@ -5,7 +5,7 @@ export interface IPayout {
   phoneNumber?: string;
   status: 'pending' | 'approved' | 'processing' | 'completed' | 'failed' | 'rejected';
   destination: {
-    type: 'bank' | 'mobile_money';
+    type: 'mpesa' | 'paypal' | 'flutterwave' | 'eversend' | 'mobile_money' | 'bank';
     accountNumber: string;
     bankCode?: string;
     network?: string;
@@ -28,7 +28,7 @@ const PayoutSchema = new Schema<IPayout>({
   phoneNumber: { type: String },
   status: { type: String, enum: ['pending', 'approved', 'processing', 'completed', 'failed', 'rejected'], default: 'pending' },
   destination: {
-    type: { type: String, enum: ['bank', 'mobile_money'], required: true },
+    type: { type: String, enum: ['mpesa', 'paypal', 'flutterwave', 'eversend', 'mobile_money', 'bank'], required: true },
     accountNumber: { type: String, required: true },
     bankCode: { type: String },
     network: { type: String },
