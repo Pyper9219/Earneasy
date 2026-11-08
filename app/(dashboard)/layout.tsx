@@ -2,6 +2,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
+import { connectDB } from "@/lib/db/connect";
+import { User } from "@/lib/db/models/User";
 import type { ReactNode } from "react";
 import {
   LayoutDashboard, Users, Wallet, Video, Settings, LogOut,
@@ -27,6 +29,16 @@ export default async function DashboardLayout({
   const token = cookies().get(SESSION_COOKIE)?.value;
   const session = token ? await verifySessionToken(token) : null;
   if (!session) redirect("/login");
+
+  // Accounts stay locked until the activation payment is confirmed.
+  await connectDB();
+  const account = await User.findById(session.userId)
+    .select("hasPaid role")
+    .lean<{ hasPaid?: boolean; role?: string } | null>();
+
+  if (account && account.role !== "admin" && !account.hasPaid) {
+    redirect("/activate");
+  }
 
   return (
     <div className="min-h-screen flex bg-[#050b1a]">

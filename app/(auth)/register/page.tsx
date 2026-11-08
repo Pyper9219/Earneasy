@@ -68,7 +68,7 @@ function RegisterPageInner() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
-      router.push("/dashboard");
+      router.push("/activate");
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
