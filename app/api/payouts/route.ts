@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/connect";
 import { Payout } from "@/lib/db/models/Payout";
 import { Wallet } from "@/lib/db/models/Wallet";
+import { User } from "@/lib/db/models/User";
+import { sendWithdrawalRequestedEmail } from "@/lib/email/templates";
 import { requireAuth } from "@/lib/auth/middleware";
 import { payoutRequestSchema } from "@/lib/utils/validators";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
@@ -67,6 +69,28 @@ export async function POST(req: NextRequest) {
       destination,
       reference: `PO_${ref()}`,
     });
+
+    const account = await User.findById(session.userId)
+      .select("name email")
+      .lean<{ name?: string; email?: string } | null>();
+
+    if (account?.email) {
+      const destLabel =
+        destination.type === "mobile_money"
+          ? `${destination.network ?? "Mobile money"} ${destination.accountNumber}`
+          : `Bank ${destination.bankCode ?? ""} ${destination.accountNumber}`;
+
+      await sendWithdrawalRequestedEmail({
+        to: account.email,
+        name: account.name,
+        amount,
+        reference: payout.reference,
+        destination: destLabel,
+        balanceAfter: wallet.balance,
+      }).catch((err) =>
+        console.error("withdrawal email failed:", (err as Error).message)
+      );
+    }
 
     return NextResponse.json({ payout }, { status: 201 });
   } catch (err) {

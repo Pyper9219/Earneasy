@@ -5,6 +5,52 @@ import { Wallet } from "@/lib/db/models/Wallet";
 import { requireAdmin } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 import { initiateB2CPayout } from "@/lib/palpluss/payouts";
+import { User } from "@/lib/db/models/User";
+import {
+  sendWithdrawalApprovedEmail,
+  sendWithdrawalPaidEmail,
+  sendWithdrawalRejectedEmail,
+} from "@/lib/email/templates";
+
+/** Loads the payee once so every decision can notify them. */
+async function notify(
+  payout: { userId: unknown; amount: number; reference: string },
+  kind: "approved" | "paid" | "rejected",
+  reason?: string
+) {
+  const payee = await User.findById(payout.userId)
+    .select("name email")
+    .lean<{ name?: string; email?: string } | null>();
+  if (!payee?.email) return;
+
+  try {
+    if (kind === "approved") {
+      await sendWithdrawalApprovedEmail({
+        to: payee.email,
+        name: payee.name,
+        amount: payout.amount,
+        reference: payout.reference,
+      });
+    } else if (kind === "paid") {
+      await sendWithdrawalPaidEmail({
+        to: payee.email,
+        name: payee.name,
+        amount: payout.amount,
+        reference: payout.reference,
+      });
+    } else {
+      await sendWithdrawalRejectedEmail({
+        to: payee.email,
+        name: payee.name,
+        amount: payout.amount,
+        reference: payout.reference,
+        reason,
+      });
+    }
+  } catch (err) {
+    console.error("payout email failed:", (err as Error).message);
+  }
+}
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -87,6 +133,11 @@ export async function PATCH(
         }
       }
 
+      await notify(
+        payout,
+        payout.status === "completed" ? "paid" : "approved"
+      );
+
       return NextResponse.json({ payout });
     }
 
@@ -108,6 +159,8 @@ export async function PATCH(
         { $inc: { totalWithdrawn: payout.amount } }
       );
 
+      await notify(payout, "paid");
+
       return NextResponse.json({ payout });
     }
 
@@ -125,6 +178,8 @@ export async function PATCH(
     payout.failureReason = reason || "Rejected by admin";
     payout.processedBy = adminId as unknown as typeof payout.processedBy;
     await payout.save();
+
+    await notify(payout, "rejected", payout.failureReason);
 
     return NextResponse.json({ payout });
   } catch (err) {

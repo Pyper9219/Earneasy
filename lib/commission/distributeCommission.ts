@@ -2,6 +2,7 @@ import { connectDB } from '@/lib/db/connect';
 import { User } from '@/lib/db/models/User';
 import { CommissionLedger } from '@/lib/db/models/CommissionLedger';
 import { Wallet } from '@/lib/db/models/Wallet';
+import { sendCommissionEarnedEmail } from '@/lib/email/templates';
 
 export async function distributeCommission(
   referredUserId: string,
@@ -38,5 +39,20 @@ export async function distributeCommission(
     amount: commissionAmount,
     level: 1,
   });
+
+  // Congratulate the earner. Never blocks the commission if email fails.
+  if (uplineUser.email) {
+    await sendCommissionEarnedEmail({
+      to: uplineUser.email,
+      name: uplineUser.name,
+      amount: commissionAmount,
+      level: 1,
+      newBalance: wallet ? wallet.balance : uplineUser.walletBalance,
+      referralLabel: referredUser.name,
+    }).catch((err) =>
+      console.error("commission email failed:", (err as Error).message)
+    );
+  }
+
   return { distributed };
 }
