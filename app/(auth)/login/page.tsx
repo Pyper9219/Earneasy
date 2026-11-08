@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/dashboard";
@@ -175,5 +175,19 @@ export default function LoginPage() {
         <Link href="/privacy" className="hover:text-slate-700">Privacy</Link>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen grid place-items-center text-slate-500">
+          Loading...
+        </div>
+      }
+    >
+      <LoginPageInner />
+    </Suspense>
   );
 }

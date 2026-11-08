@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import mongoose, { Schema, model, models } from 'mongoose';
 export interface ICommissionConfig { key: string; level1: number; level2: number; level3: number; surveyRewardMin: number; surveyRewardMax: number; activationFee: number;
   _id: string;
@@ -11,30 +10,3 @@ const CommissionConfigSchema = new Schema<ICommissionConfig>({
   surveyRewardMin: { type: Number, default: 30 }, surveyRewardMax: { type: Number, default: 150 }, activationFee: { type: Number, default: 450 },
 }, { timestamps: { updatedAt: true, createdAt: false } });
 export const CommissionConfig = models.CommissionConfig || model<ICommissionConfig>('CommissionConfig', CommissionConfigSchema);
-=======
-import { Schema, model, models, Document } from "mongoose";
-
-export interface ICommissionConfig extends Document {
-  key: string;
-  level1: number;
-  level2: number;
-  level3: number;
-  totalPrice: number;
-  updatedAt: Date;
-}
-
-const CommissionConfigSchema = new Schema<ICommissionConfig>(
-  {
-    key: { type: String, default: "default", unique: true },
-    level1: { type: Number, required: true, default: 250 },
-    level2: { type: Number, required: true, default: 100 },
-    level3: { type: Number, required: true, default: 50 },
-    totalPrice: { type: Number, required: true, default: 450 },
-  },
-  { timestamps: true }
-);
-
-export const CommissionConfig =
-  models.CommissionConfig ||
-  model<ICommissionConfig>("CommissionConfig", CommissionConfigSchema);
->>>>>>> 33073f7 (Initial commit)

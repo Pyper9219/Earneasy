@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function RegisterPage() {
+function RegisterPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const refFromUrl = params.get("ref") || "";
@@ -294,5 +294,19 @@ export default function RegisterPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen grid place-items-center text-slate-500">
+          Loading...
+        </div>
+      }
+    >
+      <RegisterPageInner />
+    </Suspense>
   );
 }

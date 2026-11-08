@@ -19,17 +19,17 @@ export async function resolveUpline(
   buyerId: Types.ObjectId | string
 ): Promise<UplineEntry[]> {
   const uplines: UplineEntry[] = [];
-  let current = await User.findById(buyerId).select("referredBy").lean() as Promise<LeanUserRef | null>;
+  let current = await User.findById(buyerId).select("referredBy").lean() as LeanUserRef | null;
   let level = 1;
 
   while (current?.referredBy && level <= 3) {
     uplines.push({
-      userId: current.referredBy,
+      userId: new Types.ObjectId(current.referredBy),
       level: level as 1 | 2 | 3,
     });
     current = await User.findById(current.referredBy)
       .select("referredBy")
-      .lean() as Promise<LeanUserRef | null>;
+      .lean() as LeanUserRef | null;
     level++;
   }
 
