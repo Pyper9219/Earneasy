@@ -3,7 +3,7 @@ export interface IPayout {
   userId: Types.ObjectId;
   amount: number;
   phoneNumber?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'approved' | 'processing' | 'completed' | 'failed' | 'rejected';
   destination: {
     type: 'bank' | 'mobile_money';
     accountNumber: string;
@@ -12,6 +12,9 @@ export interface IPayout {
   };
   reference: string;
   processedBy?: Types.ObjectId;
+  approvedBy?: Types.ObjectId;
+  approvedAt?: Date;
+  paidAt?: Date;
   failureReason?: string;
   transactionId?: string;
   errorMessage?: string;
@@ -23,7 +26,7 @@ const PayoutSchema = new Schema<IPayout>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   amount: { type: Number, required: true },
   phoneNumber: { type: String },
-  status: { type: String, enum: ['pending', 'processing', 'completed', 'failed'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'approved', 'processing', 'completed', 'failed', 'rejected'], default: 'pending' },
   destination: {
     type: { type: String, enum: ['bank', 'mobile_money'], required: true },
     accountNumber: { type: String, required: true },
@@ -32,6 +35,9 @@ const PayoutSchema = new Schema<IPayout>({
   },
   reference: { type: String, required: true, unique: true },
   processedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+  approvedAt: { type: Date },
+  paidAt: { type: Date },
   failureReason: { type: String },
   transactionId: { type: String },
   errorMessage: { type: String },

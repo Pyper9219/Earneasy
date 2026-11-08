@@ -26,9 +26,12 @@ export default async function PayoutsPage() {
         <h1 className="text-3xl font-bold">Payouts</h1>
         <p className="text-slate-500 mt-1">
           Available balance:{" "}
-          <span className="font-semibold text-emerald-700">
+          <span className="font-semibold text-emerald-400">
             KES {wallet?.balance ?? 0}
           </span>
+        </p>
+        <p className="mt-3 text-xs text-amber-300/90 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 inline-block">
+          Withdrawals are reviewed by an admin before they are paid out.
         </p>
       </header>
 
@@ -57,7 +60,33 @@ export default async function PayoutsPage() {
                   {new Date(p.createdAt).toLocaleDateString()}
                 </td>
                 <td className="px-4 py-3 text-right">KES {p.amount}</td>
-                <td className="px-4 py-3 capitalize">{p.status}</td>
+                <td className="px-4 py-3">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      p.status === "pending"
+                        ? "bg-amber-500/15 text-amber-300"
+                        : p.status === "approved"
+                          ? "bg-sky-500/15 text-sky-300"
+                          : p.status === "processing"
+                            ? "bg-indigo-500/15 text-indigo-300"
+                            : p.status === "completed"
+                              ? "bg-emerald-500/15 text-emerald-300"
+                              : "bg-rose-500/15 text-rose-300"
+                    }`}
+                  >
+                    {p.status === "pending"
+                      ? "Awaiting approval"
+                      : p.status === "approved"
+                        ? "Approved"
+                        : p.status === "processing"
+                          ? "Processing"
+                          : p.status === "completed"
+                            ? "Paid"
+                            : p.status === "rejected"
+                              ? "Rejected"
+                              : "Failed"}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

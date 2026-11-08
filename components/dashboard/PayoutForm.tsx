@@ -55,10 +55,12 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: numAmount,
-          type,
-          accountNumber,
-          bankCode: type === "bank" ? bankCode : undefined,
-          network: type === "mobile_money" ? network : undefined,
+          destination: {
+            type,
+            accountNumber,
+            bankCode: type === "bank" ? bankCode : undefined,
+            network: type === "mobile_money" ? network : undefined,
+          },
         }),
       });
 

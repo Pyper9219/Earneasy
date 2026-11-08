@@ -17,19 +17,46 @@ interface PayoutItem {
   user: { name: string; email: string };
 }
 
+const STATUS_STYLES: Record<string, string> = {
+  pending: "bg-amber-500/15 text-amber-300 border border-amber-500/30",
+  approved: "bg-sky-500/15 text-sky-300 border border-sky-500/30",
+  processing: "bg-indigo-500/15 text-indigo-300 border border-indigo-500/30",
+  completed: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30",
+  rejected: "bg-rose-500/15 text-rose-300 border border-rose-500/30",
+  failed: "bg-rose-500/15 text-rose-300 border border-rose-500/30",
+};
+
 export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function act(id: string, action: "approve" | "reject") {
+  const pendingCount = payouts.filter((p) => p.status === "pending").length;
+
+  async function act(
+    id: string,
+    action: "approve" | "reject" | "mark_paid"
+  ) {
+    let reason: string | undefined;
+    if (action === "reject") {
+      const input = window.prompt("Reason for rejecting this withdrawal?");
+      if (input === null) return;
+      reason = input || "Rejected by admin";
+    }
+    if (action === "approve") {
+      const ok = window.confirm(
+        "Approve this withdrawal? The user has been notified and the funds will be released."
+      );
+      if (!ok) return;
+    }
+
     setBusyId(id);
     setError(null);
     try {
       const res = await fetch(`/api/payouts/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, reason }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Action failed");
@@ -43,19 +70,29 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        <span className="px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+          {pendingCount} awaiting approval
+        </span>
+        <span className="text-slate-500">
+          {payouts.length} request{payouts.length === 1 ? "" : "s"} total
+        </span>
+      </div>
+
       {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border overflow-hidden">
+      <div className="bg-white rounded-2xl border overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
               <th className="text-left px-4 py-3">User</th>
               <th className="text-right px-4 py-3">Amount</th>
               <th className="text-left px-4 py-3">Destination</th>
+              <th className="text-left px-4 py-3">Requested</th>
               <th className="text-left px-4 py-3">Status</th>
               <th className="text-right px-4 py-3">Actions</th>
             </tr>
@@ -63,8 +100,8 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
           <tbody className="divide-y">
             {payouts.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                  No payout requests.
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                  No withdrawal requests yet.
                 </td>
               </tr>
             )}
@@ -82,21 +119,20 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
                     ? `${p.destination.network ?? "Mobile"} · ${p.destination.accountNumber}`
                     : `Bank ${p.destination.bankCode} · ${p.destination.accountNumber}`}
                 </td>
+                <td className="px-4 py-3 text-xs text-slate-500">
+                  {new Date(p.createdAt).toLocaleString()}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      p.status === "pending"
-                        ? "bg-amber-100 text-amber-700"
-                        : p.status === "completed"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-red-100 text-red-700"
+                      STATUS_STYLES[p.status] ?? "bg-slate-500/15 text-slate-300"
                     }`}
                   >
                     {p.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right space-x-2">
-                  {p.status === "pending" ? (
+                <td className="px-4 py-3 text-right whitespace-nowrap space-x-2">
+                  {p.status === "pending" && (
                     <>
                       <button
                         onClick={() => act(p._id, "approve")}
@@ -113,7 +149,26 @@ export default function PayoutQueue({ payouts }: { payouts: PayoutItem[] }) {
                         Reject
                       </button>
                     </>
-                  ) : (
+                  )}
+                  {(p.status === "approved" || p.status === "processing") && (
+                    <>
+                      <button
+                        onClick={() => act(p._id, "mark_paid")}
+                        disabled={busyId === p._id}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Mark paid
+                      </button>
+                      <button
+                        onClick={() => act(p._id, "reject")}
+                        disabled={busyId === p._id}
+                        className="px-3 py-1.5 rounded-lg border text-xs hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                  {!["pending", "approved", "processing"].includes(p.status) && (
                     <span className="text-xs text-slate-400">—</span>
                   )}
                 </td>

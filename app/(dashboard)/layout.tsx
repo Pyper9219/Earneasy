@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/connect";
+import { isAdminSession } from "@/lib/auth/admin";
 import { User } from "@/lib/db/models/User";
 import type { ReactNode } from "react";
 import {
@@ -40,6 +41,8 @@ export default async function DashboardLayout({
   if (account && account.role !== "admin" && !account.hasPaid) {
     redirect("/activate");
   }
+
+  const isAdmin = isAdminSession({ role: account?.role, email: session.email });
 
   return (
     <div className="dashboard-shell min-h-screen flex bg-[#050b1a]">
@@ -96,6 +99,13 @@ export default async function DashboardLayout({
             <BarChart3 className="w-[18px] h-[18px] text-cyan-400" />
             <span>Video Earnings</span>
           </Link>
+
+          {isAdmin && (
+            <Link href="/admin/payouts" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-amber-300 hover:bg-amber-500/10 hover:text-amber-200 transition-all mt-4 border border-amber-500/20">
+              <Settings className="w-[18px] h-[18px]" />
+              <span>Admin Panel</span>
+            </Link>
+          )}
         </nav>
 
         {/* User Info */}
