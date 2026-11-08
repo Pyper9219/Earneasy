@@ -70,13 +70,13 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
     setLoading(true);
 
     const numAmount = Number(amount);
-    if (!numAmount || numAmount < MIN_PAYOUT_KES) {
-      setError(`Minimum withdrawal is KES ${MIN_PAYOUT_KES}`);
+    if (!numAmount || numAmount <= 0) {
+      setError("Enter the amount you want to withdraw");
       setLoading(false);
       return;
     }
     if (numAmount > availableBalance) {
-      setError("Insufficient balance");
+      setError(`Insufficient balance. You have KES ${availableBalance}.`);
       setLoading(false);
       return;
     }
@@ -171,8 +171,7 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
             <label className="block text-sm font-medium mb-1">Amount (KES)</label>
             <input
               type="number"
-              min={MIN_PAYOUT_KES}
-              max={availableBalance}
+              inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="w-full rounded-lg border px-3 py-2"
@@ -180,7 +179,7 @@ export default function PayoutForm({ availableBalance }: PayoutFormProps) {
               required
             />
             <p className="text-xs text-slate-500 mt-1">
-              Available: KES {availableBalance} · Minimum: KES {MIN_PAYOUT_KES}
+              Available: KES {availableBalance}
             </p>
           </div>
 
