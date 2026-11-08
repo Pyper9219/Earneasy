@@ -3,15 +3,12 @@ import { connectDB } from "@/lib/db/connect";
 import { Payment } from "@/lib/db/models/Payment";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
-import { stkQuery } from "@/lib/mpesa/stkQuery";
-import { activateUserAfterPayment } from "@/lib/mpesa/activation";
+import { getTransaction } from "@/lib/palpluss/client";
+import { activateUserAfterPayment } from "@/lib/palpluss/activation";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Polled by the activation page. Falls back to the STK query API
- * when Safaricom's callback has not arrived yet.
- */
+/** Polled by the activation page while the M-Pesa prompt is on the phone. */
 export async function GET(req: NextRequest) {
   try {
     const session = await requireAuth(req);
@@ -29,46 +26,51 @@ export async function GET(req: NextRequest) {
 
     if (payment.status === "successful") {
       await activateUserAfterPayment(String(payment.userId), payment.amount);
-      return NextResponse.json({
-        status: "successful",
-        receipt: payment.mpesaReceiptNumber ?? null,
-      });
+      return NextResponse.json({ status: "successful", receipt: payment.receipt ?? null });
     }
 
     if (payment.status === "failed") {
       return NextResponse.json({
         status: "failed",
-        message: payment.mpesaResultDesc || "Payment was not completed",
+        message: payment.providerResultDesc || "The payment was not completed.",
       });
     }
 
-    if (payment.mpesaCheckoutRequestId) {
+    if (payment.providerTransactionId) {
       try {
-        const result = await stkQuery(payment.mpesaCheckoutRequestId);
+        const tx = await getTransaction(payment.providerTransactionId);
 
-        if (result.ResultCode === "0") {
+        if (tx.status === "SUCCESS") {
           payment.status = "successful";
-          payment.mpesaResultDesc = result.ResultDesc || "Success";
+          payment.receipt = tx.mpesaReceipt ?? undefined;
+          payment.providerResultDesc = tx.resultDescription ?? "Success";
           await payment.save();
           await activateUserAfterPayment(String(payment.userId), payment.amount);
           return NextResponse.json({
             status: "successful",
-            receipt: payment.mpesaReceiptNumber ?? null,
+            receipt: payment.receipt ?? null,
           });
         }
 
-        // 1032 cancelled, 1037 timeout, 1 insufficient funds and friends.
-        if (result.ResultCode && result.ResultCode !== "0") {
+        if (tx.status === "FAILED" || tx.status === "CANCELLED" || tx.status === "REVERSED") {
           payment.status = "failed";
-          payment.mpesaResultDesc = result.ResultDesc || `ResultCode ${result.ResultCode}`;
+          payment.providerResultDesc = tx.resultDescription || tx.status;
           await payment.save();
           return NextResponse.json({
             status: "failed",
-            message: payment.mpesaResultDesc,
+            message: payment.providerResultDesc,
           });
         }
+
+        return NextResponse.json({
+          status: "pending",
+          providerStatus: tx.status,
+          message:
+            tx.status === "PROCESSING"
+              ? "PIN received. Waiting for M-Pesa to confirm."
+              : "Waiting for you to enter your M-Pesa PIN.",
+        });
       } catch (err) {
-        // Query can fail while the push is still on screen; stay pending.
         return NextResponse.json({
           status: "pending",
           message: (err as Error).message,

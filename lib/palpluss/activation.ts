@@ -5,7 +5,7 @@ import { distributeCommission } from "@/lib/commission/distributeCommission";
 /**
  * Turns a user's account on after a confirmed payment.
  * Safe to call more than once: the atomic update only flips the flag once,
- * so commissions are never paid twice.
+ * so referral commissions are never paid twice.
  */
 export async function activateUserAfterPayment(
   userId: string,

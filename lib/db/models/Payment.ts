@@ -10,10 +10,10 @@ export interface IPayment {
   flwRef?: string;
   paymentMethod?: string;
   transactionId?: string;
-  mpesaCheckoutRequestId?: string;
-  mpesaMerchantRequestId?: string;
-  mpesaReceiptNumber?: string;
-  mpesaResultDesc?: string;
+  providerTransactionId?: string;
+  providerCheckoutId?: string;
+  providerResultDesc?: string;
+  receipt?: string;
   createdAt: Date;
   _id: string;
   updatedAt: Date;
@@ -29,10 +29,10 @@ const PaymentSchema = new Schema<IPayment>({
   flwRef: { type: String },
   paymentMethod: { type: String },
   transactionId: { type: String },
-  mpesaCheckoutRequestId: { type: String, index: true },
-  mpesaMerchantRequestId: { type: String },
-  mpesaReceiptNumber: { type: String },
-  mpesaResultDesc: { type: String },
+  providerTransactionId: { type: String, index: true },
+  providerCheckoutId: { type: String },
+  providerResultDesc: { type: String },
+  receipt: { type: String },
 }, { timestamps: true });
 
 export const Payment = models.Payment || model<IPayment>('Payment', PaymentSchema);

@@ -56,7 +56,7 @@ export default function ActivatePage() {
     async (ref: string) => {
       try {
         const res = await fetch(
-          `/api/payments/mpesa/status?tx_ref=${encodeURIComponent(ref)}`,
+          `/api/payments/palpluss/status?tx_ref=${encodeURIComponent(ref)}`,
           { cache: "no-store" }
         );
         const data = await res.json();
@@ -122,7 +122,7 @@ export default function ActivatePage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/payments/mpesa/stk", {
+      const res = await fetch("/api/payments/palpluss/stk", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone }),

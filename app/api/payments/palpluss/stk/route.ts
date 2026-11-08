@@ -6,13 +6,13 @@ import { User } from "@/lib/db/models/User";
 import { requireAuth } from "@/lib/auth/middleware";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
 import { CLIENT_PRICE_KES, CURRENCY } from "@/lib/utils/constants";
-import { normalizeMpesaPhone } from "@/lib/mpesa/phone";
-import { stkPush } from "@/lib/mpesa/stkPush";
-import { getMpesaConfig } from "@/lib/mpesa/config";
+import { normalizeKenyanPhone } from "@/lib/palpluss/phone";
+import { initiateStkPush } from "@/lib/palpluss/client";
+import { getPalplussConfig } from "@/lib/palpluss/config";
 
 export const dynamic = "force-dynamic";
 
-/** Creates a pending payment and sends the M-Pesa PIN prompt to the user's phone. */
+/** Creates a pending payment and triggers the M-Pesa prompt on the user's phone. */
 export async function POST(req: NextRequest) {
   try {
     const session = await requireAuth(req);
@@ -25,18 +25,18 @@ export async function POST(req: NextRequest) {
       throw new AppError("Your account is already active", 409, "ALREADY_PAID");
     }
 
-    const cfg = getMpesaConfig();
+    const cfg = getPalplussConfig();
     if (cfg.missing.length > 0) {
       throw new AppError(
-        `M-Pesa is not configured yet. Missing: ${cfg.missing.join(", ")}`,
+        `PalPluss is not configured yet. Missing: ${cfg.missing.join(", ")}`,
         503,
-        "MPESA_NOT_CONFIGURED"
+        "PALPLUSS_NOT_CONFIGURED"
       );
     }
 
     const body = await req.json().catch(() => ({}));
     const rawPhone: string = body?.phone || user.phone || "";
-    const phone = normalizeMpesaPhone(rawPhone);
+    const phone = normalizeKenyanPhone(rawPhone);
 
     if (!phone) {
       throw new AppError(
@@ -51,10 +51,8 @@ export async function POST(req: NextRequest) {
       await user.save();
     }
 
-    // Daraja limits AccountReference to 12 characters.
     const txRef = `EE${Date.now().toString(36).slice(-6)}${randomBytes(2)
-      .toString("hex")
-      .toUpperCase()}`.toUpperCase();
+      .toString("hex")}`.toUpperCase();
 
     const payment = await Payment.create({
       userId: user._id,
@@ -62,32 +60,33 @@ export async function POST(req: NextRequest) {
       currency: CURRENCY,
       status: "pending",
       txRef,
-      paymentMethod: "mpesa",
+      paymentMethod: "palpluss_mpesa",
     });
 
     try {
-      const push = await stkPush({
+      const tx = await initiateStkPush({
         phone,
         amount: CLIENT_PRICE_KES,
         accountReference: txRef,
+        transactionDesc: "EarnEasy activation",
       });
 
-      payment.transactionId = push.CheckoutRequestID;
-      payment.mpesaCheckoutRequestId = push.CheckoutRequestID;
-      payment.mpesaMerchantRequestId = push.MerchantRequestID;
+      payment.providerTransactionId = tx.transactionId;
+      payment.providerCheckoutId = tx.providerCheckoutId;
+      payment.transactionId = tx.transactionId;
       await payment.save();
 
       return NextResponse.json({
         txRef,
-        checkoutRequestId: push.CheckoutRequestID,
-        customerMessage:
-          push.CustomerMessage ||
-          "Check your phone and enter your M-Pesa PIN to complete payment.",
+        transactionId: tx.transactionId,
+        status: tx.status,
         amount: CLIENT_PRICE_KES,
+        customerMessage:
+          "Check your phone and enter your M-Pesa PIN to complete payment.",
       });
     } catch (err) {
       payment.status = "failed";
-      payment.mpesaResultDesc = (err as Error).message;
+      payment.providerResultDesc = (err as Error).message;
       await payment.save();
       throw new AppError(
         (err as Error).message || "Could not send the M-Pesa prompt",
