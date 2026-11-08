@@ -80,7 +80,7 @@ export default function DashboardPage() {
       >
         <div>
           <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Welcome back 👋
+            Welcome back
           </h1>
           <p className="text-slate-400 mt-1">Here&apos;s your earning overview for today</p>
         </div>

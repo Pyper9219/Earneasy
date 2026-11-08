@@ -123,11 +123,23 @@ export default function YouTubePage() {
             >
               {/* Thumbnail */}
               <div className="relative aspect-video bg-slate-900 overflow-hidden">
-                <img
-                  src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
-                  alt={video.title}
-                  className="w-full h-full object-cover"
-                />
+                <svg
+                  viewBox="0 0 320 180"
+                  className="w-full h-full"
+                  role="img"
+                  aria-label={video.title}
+                  preserveAspectRatio="xMidYMid slice"
+                >
+                  <defs>
+                    <linearGradient id={`yt-bg-${video.id}`} x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#0b1220" />
+                      <stop offset="100%" stopColor="#1e293b" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="320" height="180" fill={`url(#yt-bg-${video.id})`} />
+                  <circle cx="160" cy="90" r="28" fill="rgba(239,68,68,0.92)" />
+                  <polygon points="152,76 152,104 176,90" fill="#ffffff" />
+                </svg>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-xs text-white font-medium">
                   {video.duration}

@@ -7,9 +7,18 @@ import { hashPassword } from "@/lib/auth/hash";
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/auth/session";
 import { generateUniqueCode } from "@/lib/referral/generateCode";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
+import { rateLimit, clientIp } from "@/lib/auth/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const limit = rateLimit(`register:${clientIp(req)}`, 10, 60 * 60 * 1000);
+    if (!limit.ok) {
+      throw new AppError(
+        `Too many sign-ups from this network. Try again in ${limit.retryAfterSeconds} seconds.`,
+        429,
+        "RATE_LIMITED"
+      );
+    }
     await connectDB();
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);

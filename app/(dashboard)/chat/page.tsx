@@ -1,6 +1,7 @@
 ﻿'use client';
 import { useState } from 'react';
 import { MessageCircle, DollarSign, Lock, X, CheckCircle } from 'lucide-react';
+import SvgAvatar from '@/components/ui/SvgAvatar';
 
 interface Profile {
   id: number;
@@ -70,7 +71,7 @@ export default function ChatPage() {
           {PROFILES.map((profile) => (
             <div key={profile.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-rose-500/50 transition-all group">
               <div className="flex items-start gap-4 mb-4">
-                <img src={profile.image} alt={profile.name} className="w-16 h-16 rounded-full object-cover border-2 border-rose-500/30" />
+                <SvgAvatar name={profile.name} size={64} className="rounded-full border-2 border-rose-500/30" />
                 <div className="flex-1">
                   <h3 className="text-lg font-bold group-hover:text-rose-400 transition-colors">{profile.name}</h3>
                   <p className="text-sm text-slate-400">{profile.age} years • {profile.location}</p>

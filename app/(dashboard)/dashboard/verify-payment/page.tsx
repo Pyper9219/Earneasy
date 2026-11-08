@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
 
 export default function VerifyPaymentPage() {
   return (
@@ -67,7 +68,7 @@ function VerifyPaymentStatus() {
       )}
       {status === "success" && (
         <div className="p-6 rounded-2xl bg-emerald-50 text-emerald-700">
-          <p className="text-lg font-semibold">✓ {message}</p>
+          <p className="text-lg font-semibold inline-flex items-center gap-2"><CheckCircle2 className="w-5 h-5" /> {message}</p>
         </div>
       )}
       {status === "failed" && (

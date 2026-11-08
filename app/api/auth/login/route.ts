@@ -5,11 +5,21 @@ import { loginSchema } from "@/lib/utils/validators";
 import { verifyPassword } from "@/lib/auth/hash";
 import { createSessionToken, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/auth/session";
 import { toErrorResponse, AppError } from "@/lib/utils/errors";
+import { rateLimit, clientIp } from "@/lib/auth/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const body = await req.json().catch(() => ({}));
+    const attemptKey = `login:${clientIp(req)}:${String(body?.email ?? "").toLowerCase()}`;
+    const limit = rateLimit(attemptKey, 5, 15 * 60 * 1000);
+    if (!limit.ok) {
+      throw new AppError(
+        `Too many attempts. Try again in ${limit.retryAfterSeconds} seconds.`,
+        429,
+        "RATE_LIMITED"
+      );
+    }
     await connectDB();
-    const body = await req.json();
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) throw new AppError("Invalid credentials", 422);
 

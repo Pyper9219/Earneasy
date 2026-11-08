@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 import { CLIENT_PRICE_KES } from "@/lib/utils/constants";
 
 type Phase = "loading" | "ready" | "sending" | "pending" | "success" | "failed";
@@ -230,7 +231,7 @@ export default function ActivatePage() {
 
           {phase === "success" && (
             <div className="mt-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-4">
-              <p className="text-lg font-semibold text-emerald-300">✓ {message}</p>
+              <p className="text-lg font-semibold text-emerald-300 inline-flex items-center gap-2"><CheckCircle2 className="w-5 h-5" /> {message}</p>
               {receipt && (
                 <p className="mt-1 text-xs text-emerald-200/80">Receipt: {receipt}</p>
               )}

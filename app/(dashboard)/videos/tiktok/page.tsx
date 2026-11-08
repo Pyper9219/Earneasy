@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, CheckCircle2, ArrowLeft, Sparkles, ExternalLink } from "lucide-react";
+import { Play, CheckCircle2, ArrowLeft, Sparkles, ExternalLink, Heart } from "lucide-react";
 import Link from "next/link";
 import { TikTokIcon, MusicNoteIcon } from "@/components/ui/icons";
 
@@ -150,7 +150,7 @@ export default function TikTokPage() {
                   <div className="text-xs text-pink-300 mb-1">{video.author}</div>
                   <div className="text-sm font-semibold text-white line-clamp-2 mb-2">{video.title}</div>
                   <div className="flex items-center gap-2 text-xs text-slate-400">
-                    <span>❤️ {video.likes}</span>
+                    <span className="inline-flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-pink-400" /> {video.likes}</span>
                     <span>•</span>
                     <span>{video.duration}</span>
                   </div>

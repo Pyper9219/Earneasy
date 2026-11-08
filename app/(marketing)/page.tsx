@@ -8,6 +8,7 @@ import {
   Globe, Award, Target, Rocket, Heart, MessageCircle,
   Play, ArrowUpRight, Layers, BarChart3, Wallet
 } from 'lucide-react';
+import SvgAvatar from '@/components/ui/SvgAvatar';
 
 // ─── Hero Section ────────────────────────────────────────────────────────────
 function Hero() {
@@ -393,9 +394,9 @@ function Features() {
 // ─── Testimonials ────────────────────────────────────────────────────────────
 function Testimonials() {
   const testimonials = [
-    { name: 'James M.', location: 'Nairobi', text: "I earned KES 12,000 in my first month! The referral system is so easy to use. My M-Pesa was credited within hours.", earned: 'KES 12,000', avatar: '👨‍💼' },
-    { name: 'Grace W.', location: 'Mombasa', text: "Best platform I've joined. The surveys alone give me extra income daily. Highly recommend to anyone looking to earn online.", earned: 'KES 8,500', avatar: '👩‍💻' },
-    { name: 'Peter K.', location: 'Kisumu', text: "I was skeptical at first, but after my first payout I was convinced. Now my whole network is on EarnEasy!", earned: 'KES 25,000', avatar: '👨‍🎓' },
+    { name: 'James M.', location: 'Nairobi', text: "I earned KES 12,000 in my first month! The referral system is so easy to use. My M-Pesa was credited within hours.", earned: 'KES 12,000' },
+    { name: 'Grace W.', location: 'Mombasa', text: "Best platform I've joined. The surveys alone give me extra income daily. Highly recommend to anyone looking to earn online.", earned: 'KES 8,500' },
+    { name: 'Peter K.', location: 'Kisumu', text: "I was skeptical at first, but after my first payout I was convinced. Now my whole network is on EarnEasy!", earned: 'KES 25,000' },
   ];
 
   return (
@@ -439,9 +440,7 @@ function Testimonials() {
               <p className="text-slate-300 text-sm leading-relaxed mb-6">&ldquo;{t.text}&rdquo;</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 flex items-center justify-center text-lg">
-                    {t.avatar}
-                  </div>
+                  <SvgAvatar name={t.name} size={40} />
                   <div>
                     <div className="text-sm font-semibold text-white">{t.name}</div>
                     <div className="text-xs text-slate-500">{t.location}</div>
@@ -611,19 +610,22 @@ function CTA() {
 // ─── Marquee Banner ──────────────────────────────────────────────────────────
 function MarqueeBanner() {
   const items = [
-    '🎉 Welcome to EarnEasy',
-    '💰 Earn up to KES 400 per referral',
-    '📱 Daily surveys available',
-    '⚡ Instant M-Pesa payouts',
-    '🔒 Secure Flutterwave payments',
-    '🌍 10,000+ active members',
+    { Icon: Sparkles, label: 'Welcome to EarnEasy' },
+    { Icon: DollarSign, label: 'Earn up to KES 400 per referral' },
+    { Icon: Smartphone, label: 'Daily surveys available' },
+    { Icon: Zap, label: 'Instant M-Pesa payouts' },
+    { Icon: Shield, label: 'Secure payments' },
+    { Icon: Globe, label: '10,000+ active members' },
   ];
 
   return (
     <div className="relative overflow-hidden border-y border-emerald-500/20 bg-emerald-500/5 py-3">
       <div className="flex animate-marquee whitespace-nowrap">
         {[...items, ...items].map((item, i) => (
-          <span key={i} className="mx-8 text-sm font-medium text-emerald-400/80">{item}</span>
+          <span key={i} className="mx-8 text-sm font-medium text-emerald-400/80 inline-flex items-center gap-2">
+            <item.Icon className="w-4 h-4" />
+            {item.label}
+          </span>
         ))}
       </div>
     </div>

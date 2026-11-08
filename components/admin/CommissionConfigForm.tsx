@@ -89,7 +89,7 @@ export default function CommissionConfigForm({
         {status === "saving"
           ? "Saving..."
           : status === "saved"
-            ? "Saved ✓"
+            ? "Saved"
             : "Save configuration"}
       </button>
     </form>
