@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    serverComponentsExternalPackages: ["mongoose", "bcryptjs"],
+    serverComponentsExternalPackages: ["mongoose", "bcryptjs", "nodemailer"],
   },
   images: {
     remotePatterns: [

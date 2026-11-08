@@ -8,6 +8,8 @@
  * Never throws: if no provider is configured or the request fails, the payment
  * flow carries on and the problem is only logged.
  */
+import nodemailer from "nodemailer";
+
 export interface EmailInput {
   to: string;
   subject: string;
@@ -25,6 +27,43 @@ function parseFrom(raw: string): { name: string; email: string } {
 
 function fromRaw(): string {
   return process.env.EMAIL_FROM || "EarnEasy <onboarding@resend.dev>";
+}
+
+/**
+ * SMTP transport. Works with Gmail (app password), Brevo SMTP relay,
+ * Mailjet, Zoho, or any standard SMTP server.
+ * Port 587 uses STARTTLS, port 465 uses implicit TLS.
+ */
+async function sendWithSmtp(input: EmailInput): Promise<boolean> {
+  const host = process.env.SMTP_HOST;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!host || !user || !pass) return false;
+
+  const port = Number(process.env.SMTP_PORT || 587);
+  const secure =
+    process.env.SMTP_SECURE === "true" ? true : port === 465 ? true : false;
+
+  const transport = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    ...(secure ? {} : { requireTLS: true }),
+  });
+
+  const from = parseFrom(fromRaw());
+
+  const info = await transport.sendMail({
+    from: `"${from.name}" <${from.email}>`,
+    to: input.to,
+    subject: input.subject,
+    html: input.html,
+    ...(input.text ? { text: input.text } : {}),
+  });
+
+  return Boolean(info?.messageId || info?.accepted?.length);
 }
 
 async function sendWithBrevo(input: EmailInput, apiKey: string): Promise<boolean> {
@@ -89,15 +128,19 @@ async function sendWithResend(input: EmailInput, apiKey: string): Promise<boolea
 export async function sendEmail(input: EmailInput): Promise<boolean> {
   if (!input.to) return false;
 
+  const hasSmtp = Boolean(
+    process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+  );
   const brevoKey = process.env.BREVO_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
 
   try {
+    if (hasSmtp) return await sendWithSmtp(input);
     if (brevoKey) return await sendWithBrevo(input, brevoKey);
     if (resendKey) return await sendWithResend(input, resendKey);
 
     console.warn(
-      `[email] No email provider configured (BREVO_API_KEY or RESEND_API_KEY). Skipped "${input.subject}" to ${input.to}`
+      `[email] No email provider configured (SMTP, BREVO_API_KEY or RESEND_API_KEY). Skipped "${input.subject}" to ${input.to}`
     );
     return false;
   } catch (err) {
